@@ -97,6 +97,6 @@ dist2 <- function(alpha, n) {
 
 outval2 <- dist2(alpha, n)
 points(outval2[[1]], outval2[[2]], xlab = "x", ylab = "y", ylim = c(alpha)/alpha, 10)
-
+```
 
 
