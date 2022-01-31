@@ -1,0 +1,62 @@
+---
+title: "Exercise 1 - TMA4300 Computer Intensive Statistical Methods"
+output: html_notebook
+---
+
+We first wnat to write an R function that generates  samples from a exponential distrobution with rate parameter $\lambda$. 
+We now that the cumulative exponential distrobution takes the form $$ F(x;\lambda) =  1 - \lambda e ^{-\lambda x},  \quad x \ge 0 
+$$
+
+Computing the inverse cumulative function exploiting the uniform distrobution $U \sim Unif(0,1)$ can we get 
+$$
+X = F^{-1}(U) = - ln (U)/\lambda  
+$$
+
+We now want to show that this is true using simulation
+
+```{r}
+expdist <- function(rate, n) {
+   x <-  -log( (1/rate)*( 1 - runif(n)))/rate
+   return(x)
+}
+
+n <- 60000
+lambda <- 1
+plot(expdist(lambda,n))
+plot(rexp(runif(n) ,rate=lambda ))
+
+```
+
+
+
+
+Let us consider a new example where the PDF has the form
+$$
+g(x) = 
+\begin{cases}
+cx^{\alpha -1},& \quad 0 < x < 1 \\
+ce^{-x},& \quad x  \ge 1 \\
+\end{cases}
+$$
+
+The cumulative function can be computed with integration
+
+$$
+G(x) = 
+\begin{cases}
+\frac{c}{\alpha}x^{\alpha},& \quad 0 < x < 1 \\
+-c(e^{-x} - e^{-1}),& \quad x  \ge 1 \\
+\end{cases}
+$$
+And similarly with the inverse cumulative function
+
+$$
+G^{-1} (y) = \begin{cases}
+ \frac{1}{\alpha} ln(y \frac{\alpha}{c}), \quad 0<y < c/\alpha \\
+-ln( e^{-1} - y/c) 
+\end{cases}
+$$
+THis can similarly be generated such that 
+```{r}
+plot(cars)
+```
