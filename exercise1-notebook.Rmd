@@ -26,11 +26,11 @@ expdist <- function(rate, n) {
 n <- 60000
 lambda <- 1
 outval <- expdist(lambda, n)
-uni <- runif(n)
 plot(outval[[1]], outval[[2]], xlab = "x", ylab = "y")
+curve(pexp(x, rate = lambda), from=0, to=12, col='red', add = TRUE)
+```
 
-
-
+Question 2 a
 
 Let us consider a new example where the PDF has the form
 $$
