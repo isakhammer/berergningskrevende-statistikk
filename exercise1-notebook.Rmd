@@ -2,12 +2,13 @@
 title: "Exercise 1 - TMA4300 Computer Intensive Statistical Methods"
 output: html_notebook
 ---
-
-We first wnat to write an R function that generates  samples from a exponential distrobution with rate parameter $\lambda$. 
-We now that the cumulative exponential distrobution takes the form $$ F(x;\lambda) =  1 - \lambda e ^{-\lambda x},  \quad x \ge 0 
+Problem A
+Question 1
+We first want to write an R function that generates  samples from a exponential distribution with rate parameter $\lambda$. 
+We know that the cumulative exponential distrobution takes the form $$ F(x;\lambda) =  1 - \lambda e ^{-\lambda x},  \quad x \ge 0 
 $$
 
-Computing the inverse cumulative function exploiting the uniform distrobution $U \sim Unif(0,1)$ can we get 
+Computing the inverse cumulative function exploiting the uniform distribution $U \sim Unif(0,1)$ we can get 
 $$
 X = F^{-1}(U) = - ln (U)/\lambda  
 $$
@@ -16,16 +17,17 @@ We now want to show that this is true using simulation
 
 ```{r}
 expdist <- function(rate, n) {
-   x <-  -log( (1/rate)*( 1 - runif(n)))/rate
-   return(x)
+   u <- runif(n)
+   x <-  -log( (1/rate)*( 1 - u))/rate
+   list = list(x, u)
+   return(list)
 }
 
 n <- 60000
 lambda <- 1
-plot(expdist(lambda,n))
-plot(rexp(runif(n) ,rate=lambda ))
-
-```
+outval <- expdist(lambda, n)
+uni <- runif(n)
+plot(outval[[1]], outval[[2]], xlab = "x", ylab = "y")
 
 
 
