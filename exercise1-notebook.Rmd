@@ -66,7 +66,6 @@ with c as $\frac{e\alpha}{e+\alpha}$ in all the expressions.
 
 Question 2 b 
 
-2b
 This distribution can be plotted by using the inverse cumulative distribution as before.
 
 ```{r}
@@ -99,4 +98,47 @@ outval2 <- dist2(alpha, n)
 points(outval2[[1]], outval2[[2]], xlab = "x", ylab = "y", ylim = c(alpha)/alpha, 10)
 ```
 
+Question 3 a
+The normalizing constant is found by using that a PDF must integrate to 1, and therefore we get $c = \alpha$.
 
+Question 3 b
+By integrating the PDF from $-\inf$ to x, we find the CDF: 
+$$ 
+F(x) = \frac{-1}{1+e^{\alpha x}}+1
+$$
+and the inverse of F is found by solving for x (where $F(x)$ is $y$:
+$$
+F^{-1}(x) = \frac{1}{\alpha}ln(\frac{-y}{y-1})
+$$
+
+Question 3 c
+```{r}
+dist3 <- function(alpha, n) {
+   u <- runif(n)
+   x <- 1/alpha*log(-u/(u-1))
+   list = list(x, u)
+   return(list)
+}
+
+outval3 <- dist3(alpha, n)
+plot(outval3[[1]], outval3[[2]], xlab = "x", ylab = "y")
+```
+
+Question 4
+```{r}
+mynormal <- function(n) {
+  x1 <- runif(n, min = 0, max = 2*pi)
+  x2 <- expdist(0.5, n)
+  y1 <- sqrt(unlist(x2))*cos(x1)
+  y2 <- sqrt(unlist(x2))*sin(x1)
+  return(list(y1,y2))
+}
+
+n = 1000
+mynormalout <- mynormal(n)
+plot(mynormalout[[1]], mynormalout[[2]], xlab = "x", ylab = "y")
+hist(mynormalout[[2]])
+
+x <- seq(-4, 4, length=100)
+y <- dnorm(x)
+lines(x,y, type = "l", lwd = 2, xlab = "", ylab = "", add = TRUE)
