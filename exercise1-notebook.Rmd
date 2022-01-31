@@ -13,7 +13,7 @@ $$
 X = F^{-1}(U) = - ln (U)/\lambda  
 $$
 
-We now want to show that this is true using simulation
+We now want to show that this is true using simulation from the inverse cumulative distribution 
 
 ```{r}
 expdist <- function(rate, n) {
@@ -47,19 +47,27 @@ $$
 G(x) = 
 \begin{cases}
 \frac{c}{\alpha}x^{\alpha},& \quad 0 < x < 1 \\
--c(e^{-x} - e^{-1}),& \quad x  \ge 1 \\
+\frac{c}{\alpha} -c(e^{-x} - e^{-1}),& \quad x  \ge 1 \\
+0, &\quad \text{otherwise}
 \end{cases}
 $$
+
 And similarly with the inverse cumulative function
 
 $$
 G^{-1} (y) = \begin{cases}
  \frac{1}{\alpha} ln(y \frac{\alpha}{c}), \quad 0<y < c/\alpha \\
--ln( e^{-1} - y/c) 
+-ln( e^{-1} - y/c + \frac{1}{\alpha}), \quad y\geq c/\alpha \\
+0, \quad \text{otherwise}
 \end{cases}
 $$
-THis can similarly be generated such that 
+
+with c as $-\frac{\alpha}{\e}+\alpha$ in all the expressions.
+
+Question 2 b 
+
+This can similarly be generated such that 
 ```{r}
 plot(cars)
 ```
-Hei
+
