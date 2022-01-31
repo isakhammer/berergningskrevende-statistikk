@@ -137,7 +137,7 @@ mynormal <- function(n) {
 n = 1000
 mynormalout <- mynormal(n)
 plot(mynormalout[[1]], mynormalout[[2]], xlab = "x", ylab = "y")
-hist(mynormalout[[2]])
+hist(mynormalout[[2]], breaks = 500)
 
 x <- seq(-4, 4, length=100)
 y <- dnorm(x)
