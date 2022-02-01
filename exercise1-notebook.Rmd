@@ -124,9 +124,14 @@ dist3 <- function(alpha, n) {
    list = list(x, u)
    return(list)
 }
-
+x <- seq(from = -10, to = 10, length.out = 100)
+checkfunc3 <- function(alpha, x) {
+  return(alpha*exp(alpha*x)/(1+exp(alpha*x))^2)
+}
 outval3 <- dist3(alpha, n)
-plot(outval3[[1]], outval3[[2]], xlab = "x", ylab = "y")
+ggplot(data.frame(x = outval3[[1]], y = outval3[[2]]))+
+  geom_histogram(aes(x=x, y=..density..),alpha=0.2)+geom_line(data = data.frame(x=x,y=checkfunc3(alpha,x)), aes(x=x, y=y), color = "blue")
+
 ```
 
 Question 4
