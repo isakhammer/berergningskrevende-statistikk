@@ -1,0 +1,15 @@
+---
+title: "ex1b"
+output: html_notebook
+---
+
+The acceptance probability has the form
+$$
+\begin{align}
+P(U \le  \frac{f(y)}{cg(y)}) &=  \int_{-\infty}^{\infty} \int_0^{\frac{f(y)}{cg(y)}}  f_{U,Y} (y,u) du dy \\
+&=  \int_{-\infty}^{\infty} \int_0^{\frac{f(y)}{cg(y)}} 1\cdot g(y)   du dy \\
+&=  1/c
+\end{align}
+$$
+
+Such that the probability 
