@@ -69,33 +69,36 @@ Question 2 b
 This distribution can be plotted by using the inverse cumulative distribution as before.
 
 ```{r}
-# for u < c/alpha
-c <- function(alpha) {
+# for normalizing constant
+ca <- function(alpha) {
   return(exp(1)*alpha/(exp(1)+alpha))
 }
 
 dist1 <- function(alpha, n) {
    u <- runif(n)
-   x <- 1/alpha*log(u*alpha/c(alpha))
-   list = list(x, u)
-   return(list)
+   L = u<ca(alpha)/alpha
+   res = zeros(n)
+   res[L] = (u*alpha/ca(alpha))^(1/alpha)
+   res[!L] = -log((1-u)/ca(alpha))
+   return(list(x,u))
+   #if u < ca(alpha)/alpha:
+  #   x <- (u*alpha/ca(alpha))^(1/alpha)
+   #else if u >= ca(alpha)/alpha:
+    # x <- -log((1-u)/ca(alpha))
+   #list = list(x, u)
+   #return(list)
 }
 
 
 n <- 60000
 alpha <- 0.5
 outval1 <- dist1(alpha, n)
-plot(outval1[[1]], outval1[[2]], xlab = "x", ylab = "y", xlim = c(0, c(alpha)/alpha))
+library(ggplot2)
+data.frame(x = outval1[[1]], y = outval1[[2]])
+ggplot(data.frame(x = outval1[[1]], y = outval1[[2]]))+
+  geom_line(aes(x=x,y=y))
+#plot(outval1[[1]], outval1[[2]], xlab = "x", ylab = "y")
 
-dist2 <- function(alpha, n) {
-  u <- runif(n)
-  x <- -log(exp(-1)-u/c(alpha)+1/alpha)
-  list = list(x, u)
-  return(list)
-}
-
-outval2 <- dist2(alpha, n)
-points(outval2[[1]], outval2[[2]], xlab = "x", ylab = "y", ylim = c(alpha)/alpha, 10)
 ```
 
 Question 3 a
