@@ -26,8 +26,10 @@ expdist <- function(rate, n) {
 n <- 60000
 lambda <- 1
 outval <- expdist(lambda, n)
-plot(outval[[1]], outval[[2]], xlab = "x", ylab = "y")
-curve(pexp(x, rate = lambda), from=0, to=12, col='red', add = TRUE)
+x = outval[[1]]
+y = outval[[2]]
+ggplot(data.frame(x=x))+geom_histogram(aes(x=x, y = ..density..), bins = 50)+geom_line(data = data.frame(x=x,y=dexp(x, rate = 1)), aes(x=x, y=y), color = "blue")+xlim(0,5)
+
 ```
 
 Question 2 a
