@@ -4,6 +4,7 @@ output: html_notebook
 ---
 
 # Task B1
+## Task B1a
 
 The acceptance probability has the form
 $$
@@ -15,22 +16,51 @@ P(U \le  \frac{f(y)}{cg(y)}) &=  \int_{-\infty}^{\infty} \int_0^{\frac{f(y)}{cg(
 $$
 
 We know from task 1 that the $g(y)$ has the form 
+# Task B1a
 
 
+## Task B1b
+We will now demonstrate how to generate $n$ samples of $f$
 ```{r}
-plot(cars)
+#TODO: Generate n independent samples from f
 ```
 
 
 
+# Task B2
+## Task B2a
 
-## Task B2
-
-
+We can define the domain 
+$$
+C_f = \Big \{ (x_1, x_2) : 0 \le x_1 \le \sqrt{f^{*}\Big(\frac{x_2}{x_1}\Big)}  \Big \}
+$$
+where 
+$$
+f(x) =
+\begin{cases}
+x^{\alpha -1}e^{-x}, \quad & x> 0 \\
+0, \quad & x\le 0 \\
+\end{cases}
+$$ We now want to define some upper and lower bounds such that 
 $$
 \begin{align}
-a_{-} &= \sqrt{{sup}_x f(x)  } = \sqrt{f(\alpha -1)}\\
+a_{-} &= \sqrt{{sup}_x f(x)  } = \sqrt{f(\alpha -1)} \\ 
 b_{+} &= \sqrt{{sup}_{x \ge 0} x^2 f(x)  } = \sqrt{(\alpha +1)^2 f(\alpha +1)}\\
 b_{-} &= \sqrt{{sup}_{x \le 0} x^2 f(x)  } = 0
 \end{align}
 $$
+
+The supremum for $a_{-}$ and $b_{+}$ can easily be derived by finding extremal points of the function using derivation and $b_{-}$ follows from $f(x) = 0$ for $x\le 0$.
+
+## Task B2b
+
+We now want to generate $n$ samples of $f$
+
+```{r}
+# TODO: Write an R function that generates a vector of n independent samples from f. Use the function
+# to check how many tries the algorithm needs to generate n = 1000 realisations depending on
+# the value of α ∈ (1, 2000]. Generate a plot with values of α on the x-axis and the number of
+# tries used on the y-axis. Interpret the result.
+# Caution: You need to implement the algorithm on log-scale, otherwise you will get NAs already
+# for α around 30.
+```

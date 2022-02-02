@@ -1749,6 +1749,8 @@ pre code {
 <!-- rnb-text-begin -->
 <div id="task-b1" class="section level1">
 <h1>Task B1</h1>
+<div id="task-b1a" class="section level2">
+<h2>Task B1a</h2>
 <p>The acceptance probability has the form <span class="math display">\[
 \begin{align}
 P(U \le  \frac{f(y)}{cg(y)}) &amp;=  \int_{-\infty}^{\infty} \int_0^{\frac{f(y)}{cg(y)}}  f_{U,Y} (y,u) du dy \\
@@ -1756,28 +1758,59 @@ P(U \le  \frac{f(y)}{cg(y)}) &amp;=  \int_{-\infty}^{\infty} \int_0^{\frac{f(y)}
 &amp;=  1/c
 \end{align}
 \]</span></p>
-<p>We know from task 1 that the <span class="math inline">\(g(y)\)</span> has the form</p>
+<p>We know from task 1 that the <span class="math inline">\(g(y)\)</span> has the form # Task B1a</p>
+</div>
+<div id="task-b1b" class="section level2">
+<h2>Task B1b</h2>
+<p>We will now demonstrate how to generate <span class="math inline">\(n\)</span> samples of <span class="math inline">\(f\)</span></p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucGxvdChjYXJzKVxuYGBgIn0= -->
-<pre class="r"><code>plot(cars)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI1RPRE86IEdlbmVyYXRlIG4gaW5kZXBlbmRlbnQgc2FtcGxlcyBmcm9tIGZcbmBgYCJ9 -->
+<pre class="r"><code>#TODO: Generate n independent samples from f</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<div id="task-b2" class="section level2">
-<h2>Task B2</h2>
-<p><span class="math display">\[
+</div>
+</div>
+<div id="task-b2" class="section level1">
+<h1>Task B2</h1>
+<div id="task-b2a" class="section level2">
+<h2>Task B2a</h2>
+<p>We can define the domain <span class="math display">\[
+C_f = \Big \{ (x_1, x_2) : 0 \le x_1 \le \sqrt{f^{*}\Big(\frac{x_2}{x_1}\Big)}  \Big \}
+\]</span> where <span class="math display">\[
+f(x) =
+\begin{cases}
+x^{\alpha -1}e^{-x}, \quad &amp; x&gt; 0 \\
+0, \quad &amp; x\le 0 \\
+\end{cases}
+\]</span> We now want to define some upper and lower bounds such that <span class="math display">\[
 \begin{align}
-a_{-} &amp;= \sqrt{{sup}_x f(x)  } = \sqrt{f(\alpha -1)}\\
+a_{-} &amp;= \sqrt{{sup}_x f(x)  } = \sqrt{f(\alpha -1)} \\ 
 b_{+} &amp;= \sqrt{{sup}_{x \ge 0} x^2 f(x)  } = \sqrt{(\alpha +1)^2 f(\alpha +1)}\\
 b_{-} &amp;= \sqrt{{sup}_{x \le 0} x^2 f(x)  } = 0
 \end{align}
 \]</span></p>
+<p>The supremum for <span class="math inline">\(a_{-}\)</span> and <span class="math inline">\(b_{+}\)</span> can easily be derived by finding extremal points of the function using derivation and <span class="math inline">\(b_{-}\)</span> follows from <span class="math inline">\(f(x) = 0\)</span> for <span class="math inline">\(x\le 0\)</span>.</p>
+</div>
+<div id="task-b2b" class="section level2">
+<h2>Task B2b</h2>
+<p>We now want to generate <span class="math inline">\(n\)</span> samples of <span class="math inline">\(f\)</span></p>
 <!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBUT0RPOiBXcml0ZSBhbiBSIGZ1bmN0aW9uIHRoYXQgZ2VuZXJhdGVzIGEgdmVjdG9yIG9mIG4gaW5kZXBlbmRlbnQgc2FtcGxlcyBmcm9tIGYuIFVzZSB0aGUgZnVuY3Rpb25cbiMgdG8gY2hlY2sgaG93IG1hbnkgdHJpZXMgdGhlIGFsZ29yaXRobSBuZWVkcyB0byBnZW5lcmF0ZSBuID0gMTAwMCByZWFsaXNhdGlvbnMgZGVwZW5kaW5nIG9uXG4jIHRoZSB2YWx1ZSBvZiDOsSDiiIggKDEsIDIwMDBdLiBHZW5lcmF0ZSBhIHBsb3Qgd2l0aCB2YWx1ZXMgb2YgzrEgb24gdGhlIHgtYXhpcyBhbmQgdGhlIG51bWJlciBvZlxuIyB0cmllcyB1c2VkIG9uIHRoZSB5LWF4aXMuIEludGVycHJldCB0aGUgcmVzdWx0LlxuIyBDYXV0aW9uOiBZb3UgbmVlZCB0byBpbXBsZW1lbnQgdGhlIGFsZ29yaXRobSBvbiBsb2ctc2NhbGUsIG90aGVyd2lzZSB5b3Ugd2lsbCBnZXQgTkFzIGFscmVhZHlcbiMgZm9yIM6xIGFyb3VuZCAzMC5cbmBgYCJ9 -->
+<pre class="r"><code># TODO: Write an R function that generates a vector of n independent samples from f. Use the function
+# to check how many tries the algorithm needs to generate n = 1000 realisations depending on
+# the value of α ∈ (1, 2000]. Generate a plot with values of α on the x-axis and the number of
+# tries used on the y-axis. Interpret the result.
+# Caution: You need to implement the algorithm on log-scale, otherwise you will get NAs already
+# for α around 30.</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
 </div>
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiZXgxYiIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKIyBUYXNrIEIxCgpUaGUgYWNjZXB0YW5jZSBwcm9iYWJpbGl0eSBoYXMgdGhlIGZvcm0KJCQKXGJlZ2lue2FsaWdufQpQKFUgXGxlICBcZnJhY3tmKHkpfXtjZyh5KX0pICY9ICBcaW50X3stXGluZnR5fV57XGluZnR5fSBcaW50XzBee1xmcmFje2YoeSl9e2NnKHkpfX0gIGZfe1UsWX0gKHksdSkgZHUgZHkgXFwKJj0gIFxpbnRfey1caW5mdHl9XntcaW5mdHl9IFxpbnRfMF57XGZyYWN7Zih5KX17Y2coeSl9fSAxXGNkb3QgZyh5KSAgIGR1IGR5IFxcCiY9ICAxL2MKXGVuZHthbGlnbn0KJCQKCldlIGtub3cgZnJvbSB0YXNrIDEgdGhhdCB0aGUgJGcoeSkkIGhhcyB0aGUgZm9ybSAKCgpgYGB7cn0KcGxvdChjYXJzKQpgYGAKCgoKCiMjIFRhc2sgQjIKCgokJApcYmVnaW57YWxpZ259CmFfey19ICY9IFxzcXJ0e3tzdXB9X3ggZih4KSAgfSA9IFxzcXJ0e2YoXGFscGhhIC0xKX1cXApiX3srfSAmPSBcc3FydHt7c3VwfV97eCBcZ2UgMH0geF4yIGYoeCkgIH0gPSBcc3FydHsoXGFscGhhICsxKV4yIGYoXGFscGhhICsxKX1cXApiX3stfSAmPSBcc3FydHt7c3VwfV97eCBcbGUgMH0geF4yIGYoeCkgIH0gPSAwClxlbmR7YWxpZ259CiQk</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiZXgxYiIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKIyBUYXNrIEIxCiMjIFRhc2sgQjFhCgpUaGUgYWNjZXB0YW5jZSBwcm9iYWJpbGl0eSBoYXMgdGhlIGZvcm0KJCQKXGJlZ2lue2FsaWdufQpQKFUgXGxlICBcZnJhY3tmKHkpfXtjZyh5KX0pICY9ICBcaW50X3stXGluZnR5fV57XGluZnR5fSBcaW50XzBee1xmcmFje2YoeSl9e2NnKHkpfX0gIGZfe1UsWX0gKHksdSkgZHUgZHkgXFwKJj0gIFxpbnRfey1caW5mdHl9XntcaW5mdHl9IFxpbnRfMF57XGZyYWN7Zih5KX17Y2coeSl9fSAxXGNkb3QgZyh5KSAgIGR1IGR5IFxcCiY9ICAxL2MKXGVuZHthbGlnbn0KJCQKCldlIGtub3cgZnJvbSB0YXNrIDEgdGhhdCB0aGUgJGcoeSkkIGhhcyB0aGUgZm9ybSAKIyBUYXNrIEIxYQoKCiMjIFRhc2sgQjFiCldlIHdpbGwgbm93IGRlbW9uc3RyYXRlIGhvdyB0byBnZW5lcmF0ZSAkbiQgc2FtcGxlcyBvZiAkZiQKYGBge3J9CiNUT0RPOiBHZW5lcmF0ZSBuIGluZGVwZW5kZW50IHNhbXBsZXMgZnJvbSBmCmBgYAoKCgojIFRhc2sgQjIKIyMgVGFzayBCMmEKCldlIGNhbiBkZWZpbmUgdGhlIGRvbWFpbiAKJCQKQ19mID0gXEJpZyBceyAoeF8xLCB4XzIpIDogMCBcbGUgeF8xIFxsZSBcc3FydHtmXnsqfVxCaWcoXGZyYWN7eF8yfXt4XzF9XEJpZyl9ICBcQmlnIFx9CiQkCndoZXJlIAokJApmKHgpID0KXGJlZ2lue2Nhc2VzfQp4XntcYWxwaGEgLTF9ZV57LXh9LCBccXVhZCAmIHg+IDAgXFwKMCwgXHF1YWQgJiB4XGxlIDAgXFwKXGVuZHtjYXNlc30KJCQgV2Ugbm93IHdhbnQgdG8gZGVmaW5lIHNvbWUgdXBwZXIgYW5kIGxvd2VyIGJvdW5kcyBzdWNoIHRoYXQgCiQkClxiZWdpbnthbGlnbn0KYV97LX0gJj0gXHNxcnR7e3N1cH1feCBmKHgpICB9ID0gXHNxcnR7ZihcYWxwaGEgLTEpfSBcXCAKYl97K30gJj0gXHNxcnR7e3N1cH1fe3ggXGdlIDB9IHheMiBmKHgpICB9ID0gXHNxcnR7KFxhbHBoYSArMSleMiBmKFxhbHBoYSArMSl9XFwKYl97LX0gJj0gXHNxcnR7e3N1cH1fe3ggXGxlIDB9IHheMiBmKHgpICB9ID0gMApcZW5ke2FsaWdufQokJAoKVGhlIHN1cHJlbXVtIGZvciAkYV97LX0kIGFuZCAkYl97K30kIGNhbiBlYXNpbHkgYmUgZGVyaXZlZCBieSBmaW5kaW5nIGV4dHJlbWFsIHBvaW50cyBvZiB0aGUgZnVuY3Rpb24gdXNpbmcgZGVyaXZhdGlvbiBhbmQgJGJfey19JCBmb2xsb3dzIGZyb20gJGYoeCkgPSAwJCBmb3IgJHhcbGUgMCQuCgojIyBUYXNrIEIyYgoKV2Ugbm93IHdhbnQgdG8gZ2VuZXJhdGUgJG4kIHNhbXBsZXMgb2YgJGYkCgpgYGB7cn0KIyBUT0RPOiBXcml0ZSBhbiBSIGZ1bmN0aW9uIHRoYXQgZ2VuZXJhdGVzIGEgdmVjdG9yIG9mIG4gaW5kZXBlbmRlbnQgc2FtcGxlcyBmcm9tIGYuIFVzZSB0aGUgZnVuY3Rpb24KIyB0byBjaGVjayBob3cgbWFueSB0cmllcyB0aGUgYWxnb3JpdGhtIG5lZWRzIHRvIGdlbmVyYXRlIG4gPSAxMDAwIHJlYWxpc2F0aW9ucyBkZXBlbmRpbmcgb24KIyB0aGUgdmFsdWUgb2YgzrEg4oiIICgxLCAyMDAwXS4gR2VuZXJhdGUgYSBwbG90IHdpdGggdmFsdWVzIG9mIM6xIG9uIHRoZSB4LWF4aXMgYW5kIHRoZSBudW1iZXIgb2YKIyB0cmllcyB1c2VkIG9uIHRoZSB5LWF4aXMuIEludGVycHJldCB0aGUgcmVzdWx0LgojIENhdXRpb246IFlvdSBuZWVkIHRvIGltcGxlbWVudCB0aGUgYWxnb3JpdGhtIG9uIGxvZy1zY2FsZSwgb3RoZXJ3aXNlIHlvdSB3aWxsIGdldCBOQXMgYWxyZWFkeQojIGZvciDOsSBhcm91bmQgMzAuCmBgYAo=</div>
 
 
 
