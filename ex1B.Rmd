@@ -89,4 +89,13 @@ $$
 ```{r}
 # TODO: Write an R function that generates a vector of n independent samples from a gamma distribution
 #with parameters α and β. Note that the function should work for any values α > 0 and β > 0,
+
+rate <- 1 
+x <- seq(0, 5, by=0.0001)  
+alpha =3
+beta=1
+plot(x,dgamma(x, shape=alpha, rate=beta))
+
 ```
+
+
