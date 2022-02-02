@@ -153,9 +153,9 @@ From the plot we see that our simulation follows the theoretical values, althoug
 Question 4
 We want to sample from the univariate normal distribution using the Box-Müller algorithm. 
 
-#n: number of samples to generate
-#mynormal samples from box-muller algorithm
 ```{r}
+# n: number of samples to generate
+# mynormal samples from box-muller algorithm
 mynormal <- function(n) {
   u1=runif(n)
   u2=runif(n)
@@ -169,5 +169,46 @@ x <- seq(-4, 4, length=100)
 
 ggplot(std_normal_data)+
   geom_histogram(aes(x=x, y=..density..),bins=100)+geom_line(data = data.frame(x=x,y=dnorm(x)), aes(x=x, y=y), color = "blue")
+```
 
+Question 5
+We want to sample from a d-variate normal distribution with mean $\mu$ and covariance matrix $\Sigma$. We use the function mynormal with the Box-Muller algorithm to construct a vector with values of $\mu$ and a positive definite matrix $\Sigma = MM^T$, where $M$ is a d by d matrix from a normal distribution. As we don’t have given values of$\mu$ and $\Sigma$, we start by constructing $\mu$ and $Sigma$ by using the mynormal function from above.
+
+```{r}
+# mu: mean of the multivariate normal distribution
+# sigma: covariance matrix of the multivariate normal distribution
+dim = 3
+mu <- mynormal(dim)
+M=matrix(mynormal(dim*dim),dim,dim)
+sigma <- M%*%t(M)
+```
+
+To simulate from a d-variate normal distribution, we use that $y = \mu + Mx$, where $\Sigma = MM^T$. We simulate $n$ realisations from the multivariate normal distribution below. 
+
+```{r}
+# y: matrix to store the realisations of the multivariate normal distribution
+n = 100000
+y = matrix(0, dim, n)
+for (i in 1:n) {
+   y[,i] = mu + M%*%mynormal(dim)
+}
+
+# means: vector with the mean of the simulated values
+means=numeric(dim)
+for (i in 1:dim){
+means[i]=mean(y[i,])
+}
+
+# covmatrix: matrix with the covariances of the simulated values
+covmatrix = cov(t(y))
+
+print("The chosen mean vector is: ")
+print(mu)
+print("The simulated mean vector is: ")
+print(means)
+
+print("The chosen covariance matrix is: ")
+print(sigma)
+print("The simulated covariance vector is: ")
+print(covmatrix)
 ```
