@@ -172,25 +172,25 @@ ggplot(std_normal_data)+
 ```
 
 Question 5
-We want to sample from a d-variate normal distribution with mean $\mu$ and covariance matrix $\Sigma$. We use the function mynormal with the Box-Muller algorithm to construct a vector with values of $\mu$ and a positive definite matrix $\Sigma = MM^T$, where $M$ is a d by d matrix from a normal distribution. As we don’t have given values of$\mu$ and $\Sigma$, we start by constructing $\mu$ and $Sigma$ by using the mynormal function from above.
+We want to sample from a d-variate normal distribution with mean $\mu$ and covariance matrix $\Sigma$. We use the function mynormal with the Box-Muller algorithm to construct a vector with values of $\mu$ and a positive definite matrix $\Sigma = MM^T$, where $M$ is a d by d matrix from a normal distribution. As we don’t have given values of$\mu$ and $\Sigma$, we just choose a $\mu$ and $\Sigma$ such that $\Sigma$ is positive definite by the Cholesky factorization. Note that in the code, sigma = $\mu^T\mu$ because of how the Cholesky function is implemented in R. 
 
 ```{r}
 # mu: mean of the multivariate normal distribution
 # sigma: covariance matrix of the multivariate normal distribution
-dim = 3
-mu <- mynormal(dim)
-M=matrix(mynormal(dim*dim),dim,dim)
-sigma <- M%*%t(M)
+dim = 2
+mu <- c(1,2)
+M=chol(matrix(c(2,1,1,3),dim,dim))
+sigma <- t(M)%*%M
 ```
 
-To simulate from a d-variate normal distribution, we use that $y = \mu + Mx$, where $\Sigma = MM^T$. We simulate $n$ realisations from the multivariate normal distribution below. 
+To simulate from a d-variate normal distribution, we use that $y = \mu + Mx$, where $\Sigma = MM^T$. We simulate $n$ realisations from the multivariate normal distribution below. Note that the code uses $M^T$ because of how the Cholesky function is implemented in R. 
 
 ```{r}
 # y: matrix to store the realisations of the multivariate normal distribution
 n = 100000
 y = matrix(0, dim, n)
 for (i in 1:n) {
-   y[,i] = mu + M%*%mynormal(dim)
+   y[,i] = mu + t(M)%*%mynormal(dim)
 }
 
 # means: vector with the mean of the simulated values
@@ -212,3 +212,4 @@ print(sigma)
 print("The simulated covariance vector is: ")
 print(covmatrix)
 ```
+We see that the chosen mean and covariance is almost equal to the simulated values, which shows that the implementation is correct. 
