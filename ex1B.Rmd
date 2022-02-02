@@ -3,6 +3,8 @@ title: "ex1b"
 output: html_notebook
 ---
 
+# Task B1
+
 The acceptance probability has the form
 $$
 \begin{align}
@@ -12,4 +14,23 @@ P(U \le  \frac{f(y)}{cg(y)}) &=  \int_{-\infty}^{\infty} \int_0^{\frac{f(y)}{cg(
 \end{align}
 $$
 
-Such that the probability 
+We know from task 1 that the $g(y)$ has the form 
+
+
+```{r}
+plot(cars)
+```
+
+
+
+
+## Task B2
+
+
+$$
+\begin{align}
+a_{-} &= \sqrt{{sup}_x f(x)  } = \sqrt{f(\alpha -1)}\\
+b_{+} &= \sqrt{{sup}_{x \ge 0} x^2 f(x)  } = \sqrt{(\alpha +1)^2 f(\alpha +1)}\\
+b_{-} &= \sqrt{{sup}_{x \le 0} x^2 f(x)  } = 0
+\end{align}
+$$
