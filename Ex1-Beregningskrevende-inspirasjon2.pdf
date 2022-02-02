@@ -1,0 +1,950 @@
+---
+title: "TMA4300 Comouter Intensive Statistical Methods"
+subtitle: "Exercise 1"
+author: "Maja B. Mathiassen & Elsie B. Tandberg"
+output:   
+  bookdown::html_document2: 
+  toc: true
+  number_sections: true
+  fig_caption: true 
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Problem A
+## 1
+We will write a function that generates n samples from an exponential distribution with rate parameter $\lambda$.
+
+```{r exponential, fig.cap = " Comparing theoretical curve (red) to a histogram of our generated samples.", fig.pos="h"} 
+#Function that generates n samples from the exponential distribution
+exponential <- function(lambda, n) {
+  #Sampling from the uniform distribution U[0,1]
+  u = runif(n)
+  #Converting to log scale for more efficient calculation
+  x = -1/lambda * log(u)
+  return(x)
+}
+
+#Testing the function for the exponential distribution
+test_exponential = function(lambda, n) {
+  samples = exponential(lambda, n) # sample from an exponential distribution
+  hist(samples, breaks = 50, freq = FALSE, main = bquote("Histogram of samples when "~lambda == .(lambda)))
+  curve(dexp(x, lambda), col = "red", lwd = 2, add=TRUE)
+  return(samples)
+}
+
+lambda=1
+s = test_exponential(lambda, 10000)
+```
+
+Figure (\@ref(fig:exponential)) shows a histogram of our samples. The red line corresponds to the pdf of an exponential distribution, and overlaps with the histogram in a way that suggests our samples could be exponentially distributed as well. In addition we know the mean and variance of the exponential distribution. When $X\sim\text{Exp}(\lambda)$, and $\lambda=$ `r lambda`, then $E[X]=1/\lambda=$ `r 1/lambda` and $Var[X]=1/\lambda^2=$ `r 1/lambda^2`. Our samples have mean `r mean(s)` and variance `r var(s)`, which is fairly close to the theoretical values.
+
+## 2(a)
+Given the probability density function g(x),
+$$
+g(x)= \begin{cases} 
+      cx^{\alpha-1} & 0< x< 1 \\
+      ce^{-x} & 1\leq x \\
+      0 & \text{otherwise }
+   \end{cases}
+$$
+
+
+The cumulative distribution function, G(x), is found by integration
+$$
+\begin{aligned}
+G(x)&=\begin{cases}
+\int_0^x cx^{\alpha-1}dx &0<x<1\\
+\int_0^1 cx^{\alpha-1}dx+\int_1^xce^{-x}dx &1\le x\\
+0 & \text{otherwise}\\
+\end{cases}\\
+&=\begin{cases}
+\frac{1}{\alpha}cx^{\alpha} & 0<x<1\\
+1-ce^{-x} & 1\le x\\
+0 &\text{otherwise}
+\end{cases}
+\end{aligned}
+$$
+The inverse cumulative distribution function is found by solving G(x) for x.
+$$
+\begin{aligned}
+G(x)&=\frac{1}{\alpha}cx^{\alpha}=u,  \text{  for }x \in (0,1)\\
+x&=(\frac{\alpha u}{c})^{\frac{1}{\alpha}}.
+\end{aligned}
+$$
+$$
+\begin{aligned}
+G(x)&=1-ce^{-x}=u,  \text{  for }1\le x\\
+x&=\text{ln}(c)-\text{ln}(1-u).
+\end{aligned}
+$$
+## 2(b)
+Next we write a function that generates samples from $g$. We have found the normalizing constant $c=\frac{1}{1/\alpha + e^{-1}}$.
+
+```{r, fig.cap = "Plot of teoretical sample from g in red line, and histogram of our samples generated from g." }
+#Function that samples from g(x)
+sampleA2 = function(alpha, n) {
+  #Defining the normalizing constant
+  c = 1 / (1/alpha + exp(-1))
+  G = 1 - c*exp(-1) # G(1)
+  u = runif(n)
+  #x is a sample from g(x)
+  x = ifelse(u<G, (alpha/c * u)^(1/alpha), log(c) - log(1-u))
+  return (x)
+}
+
+#Function that generates theoretical values directly from g used to test our sample.
+g_A2 = function(alpha, x) {
+  c = 1 / (1/alpha + exp(-1))
+  g = ifelse(0<x & x<1, c*x^(alpha-1), ifelse(x>=1, c*exp(-x), 0))
+  return (g)
+}
+
+#Testing our sample from g by plotting a histogram of our sample and a theoretical curve
+test_A2 = function(alpha, n) {
+  #Sampling from g
+  samples = sampleA2(alpha, n)
+  hist(samples, breaks = 50, freq = FALSE, main = bquote("Histogram of samples when "~alpha == .(alpha)))
+  #Adding curve with true values from g
+  curve(g_A2(alpha, x), col = "red", lwd = 2, add=TRUE)
+}
+
+alpha = 0.5
+test_A2(alpha, 10000)
+```
+
+
+The red line is the function $g(x)$, which we wish to sample from. The histogram shows our samples, and corresponds well with the red line. 
+
+## 3(a)
+The normalizing constant $c$ will make the value of the integral of $f(x)$ equal to 1. 
+$$
+\begin{aligned}
+\int_{-\infty}^{\infty}f(x)&=\int_{-\infty}^{\infty}\frac{ce^{\alpha x}}{(1+e^{\alpha x})^2}dx && \text{Substitute } u=e^{\alpha x}+1\\
+&=\frac{c}{\alpha}\int_{-\infty}^{\infty}\frac{1}{u^2}du\\
+&=\frac{c}{\alpha}\bigg[-\frac{1}{e^{\alpha x}+1}\bigg]_{-\infty}^{\infty}\\
+&=\frac{c}{\alpha}
+\end{aligned}
+$$
+In order for this integral to be one we have to have $c=\alpha$.
+
+## 3(b)
+Finding the cumulative distribution function, $F(x)$, of the pdf $f(x)$, by integrating $f(x)$ up to $x$.The calculations are similar to the previous one.
+$$
+\begin{aligned}
+F(x)=\int_{-\infty}^{x}f(x)&=\int_{-\infty}^{x}\frac{\alpha e^{\alpha x}}{(1+e^{\alpha x})^2}dx\\
+&=\frac{\alpha}{\alpha}\bigg[-\frac{1}{e^{\alpha x}+1}\bigg]_{-\infty}^{x}\\
+&=\frac{e^{\alpha x}}{e^{\alpha x}+1}
+\end{aligned}
+$$
+The inverse function of $F$ is found by solving the equation for $x$.
+
+$$
+\begin{aligned}
+u&=\frac{e^{\alpha x}}{e^{\alpha x}+1}\\
+e^{\alpha x }&=\frac{u}{u-1}&\\
+x&=\frac{log(\frac{-u}{u-1})}{\alpha}.
+\end{aligned}
+$$
+## 3(c)
+
+We will write a function that generates samples from $f$, using the inverse found above. 
+
+```{r, fig.cap= "Plot of teoretical sample from f in red line, and histogram of our samples generated grom f."}
+#Writing a function that generates n samples from f.
+f3c <- function(alpha, n){
+    u<-runif(n)
+    x <- log(-u/(u-1))/alpha
+    return(x)
+}
+
+#function that generates values directly from f(x), used to compare.
+curve_f3c <-function(alpha,x){
+  return((alpha*exp(alpha*x))/(1+exp(alpha*x))^2)
+}
+
+test_f3c <-function(alpha,n){
+  samples_f3c <- f3c(alpha,n)
+  hist(samples_f3c, breaks = 30, freq = FALSE, main = bquote("Histogram of samples when "~alpha == .(alpha)))
+  #Adding curve with true values from g
+  curve(curve_f3c(alpha, x), col = "red", lwd = 2, add=TRUE)
+}
+
+test_f3c(3,10000)
+```
+
+The histogram of our computed samples from $f$ match the theoretical curve. This means that our function is working properly.
+
+## 4
+
+We will write a function that generates a vector of $n$ independent samples from the standard normal distribution using the Box-Muller algorithm. 
+``` {r, fig.cap="Plot of histogram of our samples from the standard normal distribution and a theoretical curve from the same distribution.", fig.pos="H"}
+#Function that uses Box-Muller algorithm to generate a vector of n independent samples from the 
+#standard normal distribution.
+box_muller = function(n) {
+  # Assume n is an even number
+  m = n/2
+  
+  x1 = runif(m) * 2*pi
+  x2 = exponential(0.5, m)
+  
+  y1 = sqrt(x2) * cos(x1)
+  y2 = sqrt(x2) * sin(x1)
+  
+  y = c(y1, y2)
+  return(y)
+}
+
+
+#Function that tests our implementation
+test_box_muller = function(n) {
+  samples = box_muller(n) # sample from N(0,1)
+  hist(samples, freq = FALSE)
+  curve(dnorm(x, mean=0, sd=1), col = "red", lwd = 2, add=TRUE)
+  return(samples)
+}
+
+s = test_box_muller(10000)
+```
+
+
+The above histogram shows the samples generated from the Box-Muller algorithm. Most of the samples lie close to 0, and the histogram is fairly symmetric, which is the case for a $N(0,1)$ distribution. The red line which represents the actual $N(0,1)$ distribution follows the histogram very well. Additionally, we know the distribution have mean 0 and variance 1. Our samples have mean `r mean(s)` and the variance is `r var(s)`, which are close to the theoretical values. 
+
+## 5
+We can use the Box Muller algorithm in order to simulate from a $N_d(\vec\mu, \Sigma)$ distribution. If $X\sim N_d(0,1)$, then $Y=\vec\mu+AX$ is from $N_d(\mu,AA^T)$. If $A$ is the Cholesky decomposition of $\Sigma$, then $AA^T=\Sigma$. 
+```{r}
+multivariate = function(mu, sigma, d, n) {
+  A = chol(sigma) # A is a Cholesky decomposition of sigma
+  X = matrix(0, nrow=d, ncol=n)
+  for (i in 1:n) {
+    X[,i] = box_muller(d) # uses box muller to find a vector of d values from N(0,1)
+  }
+  Y = t(mu + t(A) %*% X)
+  return (Y)
+}
+
+d = 2
+mu = c(1,2)
+sigma = cbind( c(2, 1), c(1, 3))
+sim = multivariate(mu, sigma, 2, 100000)
+```
+
+In order to test our implementation we look at 
+$$
+\begin{aligned}
+  \vec\mu = \begin{pmatrix}
+    1 \\
+    2
+  \end{pmatrix} \quad 
+  \Sigma = \begin{pmatrix}
+    2 & 1 \\
+    1 & 3
+  \end{pmatrix}
+\end{aligned}
+$$
+If $X\sim N_d(\vec\mu, \Sigma)$, then $E[X]=\vec\mu$ and $Var[X]=\Sigma$. Our simulated data have mean `r colMeans(sim)` and variance 
+``` {r}
+var(sim)
+```
+
+This is close to the theoretical values so we make the conclusion that our algorithm is correct.
+
+# Problem B
+## 1(a)
+Here, we look at the gamma distribution with $\alpha\in(0,1)$ and $\beta=0$, which had pdf 
+$$
+f(x)= \begin{cases} 
+      \frac{1}{\Gamma(\alpha)}x^{\alpha-1}e^{-x} & 0< x\\
+      0 & \text{otherwise. }
+   \end{cases}
+$$
+
+Finding an expression for the acceptance probability, $\tau$.
+$$
+\begin{aligned}
+\frac{f(x)}{g(x)}&\le d
+\le \begin{cases} 
+      \frac{1}{c\Gamma(\alpha)}e^{-x} & 0< x< 1 \\
+      \frac{1}{c\Gamma(\alpha)}x^{\alpha -1} & 1\leq x \\
+      0 & \text{otherwise. }
+   \end{cases}\\ \\
+\end{aligned}
+$$
+Considering the limits on $x$, we obtain the following inequalities
+
+
+$$
+\begin{aligned}
+\frac{1}{c\Gamma(\alpha)}e^{-x}\le \frac{1}{c\Gamma(\alpha)}=d && \frac{1}{c\Gamma(\alpha)}x^{\alpha -1}\le\frac{1}{c\Gamma(\alpha)}=d.
+\end{aligned}
+$$
+The acceptance probability is given by
+$$
+\begin{aligned}
+\tau&=\begin{cases}
+\frac{1}{d}\frac{1}{c\Gamma(\alpha)}e^{-x}\\
+\frac{1}{d}\frac{1}{c\Gamma(\alpha)}x^{\alpha -1}\\
+0
+\end{cases}\\
+&=\begin{cases}
+e^{-x}\\
+x^{\alpha -1}\\
+0
+\end{cases}
+\end{aligned}
+$$
+## 1(b)
+
+We can simulate from the gamma distribution using rejection sampling.
+```{r, fig.cap="Histogram of our sample from the gamma distribution, and a red curve showing the theoretical distribution."}
+#Function that samples from the gamma distribution
+sampleB1 = function(alpha) {
+  accept = 0
+  while (accept == 0) {
+    # generate x from g(x)
+    x = sampleA2(alpha, 1)
+      
+    # generate u from U[0,1]
+    u = runif(1)
+    
+    # find acceptance prob a
+    a = ifelse(x<1, exp(-x), x^(alpha-1))
+    
+    # if u<=a, accept   
+    if (u<=a) {
+      accept = 1
+    }
+  }
+  return (x)
+}
+
+#Function that finds n samples of the gamma distribution
+gammaB1 = function(alpha, n) {
+  X = 1:n
+  
+  for (i in 1:n) {
+    X[i] = sampleB1(alpha)
+  }
+  
+  return (X)
+}
+
+#Function that tests the implementation
+testB1 = function(alpha, n) {
+  # Know that if X~Gamma(alpha, 1), then E[X] = alpha and Var[X] = alpha
+  samples = gammaB1(alpha, n)
+  hist(samples, breaks = 40, freq = FALSE, main = bquote("Histogram of samples when "~alpha == .(alpha)))
+  curve(dgamma(x, alpha, 1), col = "red", lwd = 2, add=TRUE)
+  return(samples)
+}
+
+alpha = 0.5
+s = testB1(alpha, 100000)
+```
+
+
+If $X\sim\text{Gamma}(\alpha, \beta)$ then $E[X] = \alpha/\beta$ and $Var[E]=\alpha/\beta^2$. Here $\alpha =$ `r alpha` and $\beta=1$, which means that $E[X]=Var[X]=$ `r alpha`. Our samples have mean `r mean(s)` and variance `r var(s)`.
+
+From the plot we see that our sample matches the teoretical distribution, so our function is correct.
+
+
+## 2(a)
+We will now use the ratio of uniforms method to simulate from the gamma distribution with parameters $\alpha>1$ and $\beta=1$. We have
+
+$$
+C_f=\begin{cases}(x_1,x_2):0\le x_1\le \sqrt{f^*\bigg(\frac{x_2}{x_1}\bigg)}
+\end{cases} \text{ where } 
+f^*(x)=\begin{cases}x^{\alpha-1}e^{-x},& 0<x\\
+0, & \text{ otherwise}
+\end{cases}
+$$
+and
+$$
+\begin{aligned}
+a&=\sqrt{\sup_{0<x}f^*(x)}= \sqrt{\sup_{0<x}(x^{\alpha-1}e^{-x})} \\
+b_+&=\sqrt{\sup_{0\le x}(x^2f^*(x))} =\sqrt{\sup_{0\le x}(x^2x^{\alpha-1}e^{-x})}\\
+b_-&=\sqrt{\sup_{x<0}(x^2f^*(x))}=\sqrt{\sup_{x<0}(x^2\cdot0)} = 0.
+\end{aligned}
+$$
+The values of $a$, $b_+$ and $b_-$ are found by derivation of $f^*(x)$ and $x^2f^*(x)$, setting the equations equal to zero and solving for x. 
+$$
+\begin{aligned}
+\frac{d}{dx}f^*(x)=0 &&  \frac{d}{dx}x^2f^*(x)=0\\
+\frac{d}{dx}(x^{\alpha-1}e^{-x})=0 && \frac{d}{dx}(x^2x^{\alpha-1}e^{-x})=0 \\
+x=\alpha-1 && x=\alpha+1\\
+\end{aligned}
+$$
+$$
+\begin{aligned}
+a&=\sqrt{(\alpha-1)^{\alpha-1}e^{1-\alpha}}\\
+b_+&=\sqrt{(\alpha+1)^{\alpha+1}e^{-1-\alpha}}\\
+b_-& = 0
+\end{aligned}
+$$
+## 2(b)
+
+To write a function that generates samples from $f$ we sample $x_1\sim U[0,a]$ and $x_2\sim U[0,b_+]$ and check if the samples are in $C_f$. Then the accepted samples will have the property that $\frac{x_2}{x_1}\sim Gamma(\alpha, 1)$. The algorithm will be implemented on log-scale to be able to handle large values for $\alpha$. To sample from $U[0,a]\times U[0,b_+]$, when we have $u\sim U[0,1]$ we have that
+
+$$
+\begin{aligned}
+x_1&=a+u_1\\
+log(x_1)&= log(a)+log(u_1)\quad \text{on log scale.}\\
+&=\frac{1}{2}((\alpha-1)log(\alpha-1)+(1-\alpha))+log(u_1)\\
+x_2&=b_+ +u_2\\
+log(x_2) &= log(b_+)+log(u_2)\quad \text{on log scale.}\\
+&=\frac{1}{2}((\alpha+1)log(\alpha+1)-1-\alpha))+log(u_2)
+\end{aligned}
+$$
+The acceptance criteria is found by checking that $(x_1, x_2)\in C_f$. This is true when we have the inequality
+
+$$
+\begin{aligned}
+x_1&\le \sqrt{\frac{x_2^{\alpha-1}e^{-x_2}}{x_1^{\alpha-1}e^{-x_1}}}\\
+2log(x_1)&\le(\alpha-1)(log(x_2)-log(x_1))-e^{log(x_2)-log(x_1)} \quad \text{on log scale.}
+\end{aligned}
+$$
+```{r, fig.cap="Plot from the gamma distribution for large value of alpha=100.7, with a histogram of our samples and a theoretical curve."}
+#Function that samples from the gamma distribution 
+gammaB2 <- function(alpha, n){
+  #Defining a and b+ on log scale
+  loga <- 1/2*((alpha-1)*log(alpha-1)+(1-alpha))
+  logb <- 1/2*((alpha+1)*log(alpha+1)-1-alpha)
+  
+  accept=c()#vector of accepted values
+  tries=1
+  count = 1
+  while(length(accept)<n){
+    #Converting to uniform distribution with correct limits
+    logx1 <- loga + log(runif(1))
+    logx2 <- logb + log(runif(1))
+    #Proposal sample from the gamma distribution
+    y<-exp(logx2-logx1)
+    a <- (alpha-1)*(logx2-logx1)-exp(logx2-logx1)#acceptance criteria
+    if(2*logx1<=a){
+      accept[count]<-y
+      count = count +1
+    }
+    tries=tries+1
+  }
+  return(cbind(accept,tries-1))
+}
+
+#Function that tests the implementation
+testB2 = function(alpha, n) {
+  samples = gammaB2(alpha, n)[,1]
+  hist(samples, breaks = 40, freq = FALSE, main = bquote("Histogram of samples when "~alpha == .(alpha)))
+  curve(dgamma(x, alpha, 1), col = "red", lwd = 2, add=TRUE)
+  return(samples)
+}
+
+alpha = 100.7
+s = testB2(alpha, 10000)
+```
+
+
+Here $\alpha =$ `r alpha` and $\beta=1$, which means that $E[X]=Var[X]=$ `r alpha`. Our samples have mean `r mean(s)` and variance `r var(s)`.
+
+We will now look at how many tries our algorithm need to generate $n=1000$ realizations depending on the value of $\alpha \in (1,2000]$.
+
+
+```{r, set.seed(321), fig.cap="Plot of the number of tries depending on the value of alpha."}
+#Function for testing number of tries for each value of alpha
+testf <- function(){
+alphas = 2:2000
+num_tries = data.frame(alphas,tries=0)
+for(i in alphas){
+  try = f(1000,alphas[i-1])[1,2]
+  num_tries[i-1,2]<-try
+}
+return(num_tries)
+}
+#testing_large_alphas<- testf() HUSK Å FJERNE!!!
+#plot(testing_large_alphas)
+```
+We observe that the number og tries increase with larger values for $\alpha$.
+
+## 3
+In order to sample from the gamma distribution when $\alpha>0$, we can use the previous implementations, as well as the fact that $Gamma(1,1)$ is equivalent with $Exp(1)$. Since we want to sample when $\beta>0$, not just when $\beta=1$, we use that if $X\sim Gamma(\alpha, 1)$, then $Y=X/\beta\sim Gamma(\alpha,\beta)$.
+```{r, fig.cap="Histogram of samples from gamma(106,15.9), compared to theoretical curve."}
+#Function that samples from the gamma distribution
+gammaB3 = function(alph, bet, n) {
+  if (alph<0) {
+    X = gammaB1(alph, n) # sample from a Gamma(alpha, 1) distribution, 0<alpha<1
+  }
+  else if (alph == 1) {
+    X = exponential(1, n) # Gamma(1,1) is equivalent with Exp(1)
+  }
+  else {
+    X = gammaB2(alph, n)[,1] # sample from Gamma(alpha, 1), 1<=alpha
+  }
+  Y = X/bet # Y contains n samples from Gamma(alpha, beta), alpha>0, beta>0
+  
+  return(Y)
+}
+
+#Function that tests the implementation
+testB3 = function(alp, bet, n) {
+  # X ~ Gamma(a, b), E[X] = a/b, Var[X] = a/b^2
+  samples = gammaB3(alp, bet, n)
+  
+  hist(samples, breaks = 40, freq = FALSE, main = bquote("Histogram of samples when "~alpha == .(alp) ~beta ==.(bet)))
+  curve(dgamma(x, alp, bet), col = "red", lwd = 2, add=TRUE)
+  return(samples)
+}
+
+a = 106
+b = 15.9
+s = testB3(a,b,100000)
+``` 
+
+Now $\alpha =$ `r a` and $\beta=$ `r b`, which means that $E[X]=$ `r a/b` and $Var[X]=$`r a/b^2`. Our samples have mean `r mean(s)` and variance `r var(s)`.
+
+Looking at the plot we see that the histogram of our realizations match with the theoretical values. 
+
+## 4(a)
+$X\sim\text{Gamma}(\alpha,1)$ and $Y\sim\text{Gamma}(\beta,1)$. The joint distribution function is 
+$$
+\begin{aligned}
+  f_{X,Y}(x,y)=f_X(x)f_Y(y) = \frac{1}{\Gamma(\alpha)\Gamma(\beta)}x^{\alpha-1}y^{\beta-1}e^{-x-y}.
+\end{aligned}
+$$
+We define 
+$$
+\begin{aligned}
+  U=\frac{X}{X+Y}=g(X,Y), \quad V=X+Y=h(X,Y)
+\end{aligned}
+$$
+which means that $X=UV=g^{-1}(U,V)$ and $Y=V(1-U)=h^{-1}(U,V)$. Then
+$$
+f_{U,V}(u,v)=f_X(g^{-1}(u,v))f_Y(h^{-1}(u,v))|J|
+$$
+where $J$ is the Jacobian, and 
+$$
+\begin{aligned}
+  |J| = \begin{vmatrix}
+    \partial g^{-1}/\partial u & \partial g^{-1}/\partial v \\
+    \partial h^{-1}/\partial u & \partial h^{-1}/\partial v
+  \end{vmatrix}  = \begin{vmatrix}
+    v & u \\
+    -v &(1-u)
+  \end{vmatrix} = v(1-u) + uv = v.
+\end{aligned}
+$$
+Then the joint distribution of $U$ and $V$ becomes
+$$
+\begin{aligned}
+  f_{U,V}(u,v)&=\frac{1}{\Gamma(\alpha)}(uv)^{\alpha-1}e^{-uv}\frac{1}{\Gamma(\beta)}(v(1-u))^{\beta-1}e^{-v(1-u)}v \\
+  &= \frac{1}{\Gamma(\alpha)\Gamma(\beta)}u^{\alpha-1}(1-u)^{\beta-1}v^{\alpha+\beta-1}e^{-v}.
+\end{aligned}
+$$
+which mean that
+$$
+\begin{aligned}
+  f_U(u)&=\int_0^\infty f_{U,V}(u,v)dv = \frac{1}{\Gamma(\alpha)\Gamma(\beta)}u^{\alpha-1}(1-u)^{\beta-1}\int_0^\infty v^{\alpha+\beta-1}e^{-v}dv \\
+  &= \frac{1}{\Gamma(\alpha)\Gamma(\beta)}u^{\alpha-1}(1-u)^{\beta-1} \Gamma(\alpha+\beta).
+\end{aligned}
+$$
+This means that $U\sim\text{Beta}(\alpha,\beta)$.
+
+## 4(b)
+Using the result above we can sample from the beta distribution.
+``` {r, fig.cap="Plot from the beta distribution, with a histogram of our samples and a theoretical curve."}
+#Function that samples from the beta distribution
+betaB4 = function(alp, bet, n) {
+  x = gammaB3(alp, 1, n)
+  y = gammaB3(bet, 1, n)
+  z = x / (x+y)
+  
+  return (z)
+}
+
+#Function that tests the implementation
+testB4 = function(a, b, n) {
+  # Note: X ~ Beta(a, b), then E[X] = a/(a+b), and Var[X] = ab/( (a+b)^2 (a+b+1) )
+  samples = betaB4(a, b, n)
+  
+  hist(samples, breaks = 30, freq = FALSE, main = bquote("Histogram of samples when "~alpha == .(a) ~beta ==.(b)))
+  curve(dbeta(x, a, b), col = "red", lwd = 2, add=TRUE)
+  return(samples)
+}
+
+a = 345
+b = 153
+s=testB4(a, b, 100000)
+
+```
+
+
+When $X\sim\text{Beta}(\alpha,\beta)$, then $E[X]=\alpha/(\alpha+\beta)$ and $Var[X]=\alpha\beta/((\alpha+\beta)^2(\alpha+\beta+1))$.Here $\alpha =$ `r a` and $\beta=$ `r b`, which means that $E[X]=$ `r a/(a+b)` and $Var[X]=$`r a*b/( (a+b)^2 * (a+b+1) )`. Our samples have mean `r mean(s)` and variance `r var(s)`.
+
+The histogram of samples match the curve.
+
+
+# Problem C
+
+## C1)
+
+We want $\theta=Prob(X>4)$, where $X~N(0,1)$
+```{r}
+#Indicator function required to count the number of samples above a limit
+indicator_function<-function(x, limit){
+  return(x>4)
+}
+
+monte_carlo<-function(n, limit){
+  #Generate a vector of n independent samples from the standard normal distribution
+  normal_samples <- box_muller(n) 
+  #Vector of length n with value true for samples above limit, and false otherwise
+  samples_above <-indicator_function(normal_samples,limit) 
+  #Estimating theta by finding the mean
+  theta_hat <- mean(samples_above) 
+  #Finding the sample variance
+  theta_var <- var(samples_above)/(n-1)
+  return(c(theta_hat,theta_var))
+}
+
+
+#Computing 95% confidence interval
+confidence_interval<-function(theta_hat, theta_var){
+  left<-theta_hat+qnorm(0.025)*sqrt(theta_var) #The left value of the interval
+  right<-theta_hat+qnorm(0.975)*sqrt(theta_var) #The right value of the interval
+  return(c(left,right))
+}
+
+#Testing the functions
+test_mc<-monte_carlo(10^5,4)
+conf_int <- confidence_interval(test_mc[1],test_mc[2])
+conf_int
+
+```
+The 95% confidence interval for $\theta$ based on these n samples is [`r conf_int`].
+
+## C2)
+$$
+g(x)= \begin{cases} 
+      cxe^{-0.5x^2} & 4< x \\
+      0 & \text{otherwise }
+   \end{cases}
+$$
+The cumulative distribution function is given by
+$$
+\begin{aligned}
+G(x)&=\int_4^xcte^{-0.5t^2}dt\\
+&=c (e^{-8}-e^{-0.x^2}) & \text{The normalizing constant, } &c=e^8 \text{, is found by setting } \int_4^\infty g(x)=1\\
+&=1-e^{8-0.5x^2}
+\end{aligned}
+$$
+Finding the inverse of G(x)
+$$
+\begin{aligned}
+u&=1-e^{8-0.5x^2}\\
+e^{8-0.5x^2}&=1-u\\
+8-\frac{x^2}{2}&=log(1-u)\\
+x&=\sqrt{16-2log(1-u)}
+\end{aligned}
+$$
+
+```{r}
+#Importance sampling
+importance_sampling <- function(n, limit){
+  x <- sqrt(16-2*log(1-runif(n))) #generating from g(x) using inversion sampling
+  h <- indicator_function(x) 
+  g <- exp(8)*x*exp(-0.5*x^2) #Calculating g(x_i)
+  f <- 1/sqrt(2*pi)*exp(-0.5*x^2) #Calculating f(x_i) where f(x) is the standard normal
+  #Finding estimates for theta and the variance of the estimate of theta
+  theta_hat <- 1/n*sum(h*f/g)
+  theta_var <- 1/(n*(n-1))*sum(h*f/g-theta_hat)^2
+  return(c(theta_hat,theta_var))
+}
+#Computing a test sample of length n from the importance sampling
+test_sampleC2<-importance_sampling(100000,4)
+
+#Computing the confidence intercal for theta
+conf_intC2 <- confidence_interval(test_sampleC2[1],test_sampleC2[2])
+```
+The 95% confidence interval for $\theta$ based on these n samples from the importance sampling is [`r conf_intC2`]. Compared to the confidence interval we got from the monte carlo integration [`r conf_int`], we see that the interval from importance sampling is more narrow. In this case the importance sampling is preferred as i gives a shorter interval for the estimated theta.
+
+We want to check how many samples, n, needed in C1 to get the same precision as obtained with the importance sampling.
+```{r}
+#Testing differendt values for n
+test_mc_105<-monte_carlo(10^5,4) #n=10^5
+test_mc_106<-monte_carlo(10^6,4)
+test_mc_107<-monte_carlo(10^7,4)
+test_mc_108<-monte_carlo(10^8,4)
+
+#Computing the corresponding confidence intervals
+conf_int_105 <- confidence_interval(test_mc_105[1],test_mc_105[2])
+conf_int_106 <- confidence_interval(test_mc_106[1],test_mc_106[2])
+conf_int_107 <- confidence_interval(test_mc_107[1],test_mc_107[2])
+conf_int_108 <- confidence_interval(test_mc_108[1],test_mc_108[2])
+```
+The 95% confidence interval for $n=10^5$: `r conf_int_105`  
+The 95% confidence interval for $n=10^6$: `r conf_int_106`  
+The 95% confidence interval for $n=10^7$: `r conf_int_107`  
+The 95% confidence interval for $n=10^8$: `r conf_int_108`  
+
+We see that for $n=10^6$ samples we get approximately the same order for the confidence interval from monte carlo, and the importance sampling. Further close precision is obtained for $n=10^8$.
+
+## 3(a)
+Now we wan to combine the importance sampling with antithetic variates. 
+```{r}
+#Function generating n pairs of antithetic variates
+antithetic <- function(n, limit){
+  #Generating n pairs with input 1-u and u
+  
+  #generating from g(x) using inversion sampling
+  x1 <- sqrt(16-2*log(1-runif(n))) 
+  x2 <- sqrt(16-2*log(runif(n)))
+  
+  #Indicator function to find the values above the limit
+  h1 <- indicator_function(x1) 
+  h2 <- indicator_function(x2)
+  
+  #Calculating g(x_i)
+  g1 <- exp(8)*x1*exp(-0.5*x1^2) 
+  g2 <- exp(8)*x2*exp(-0.5*x2^2) 
+  
+  #Calculating f(x_i) where f(x) is the standard normal
+  f1 <- 1/sqrt(2*pi)*exp(-0.5*x1^2) 
+  f2 <- 1/sqrt(2*pi)*exp(-0.5*x2^2)
+  
+  #Finding estimates for theta
+  theta_hat1 <- 1/n*sum(h1*f1/g1)
+  theta_hat2 <- 1/n*sum(h2*f2/g2)
+  theta_hat <- 0.5*(theta_hat1+theta_hat2)
+  
+  #Finding estimates for the variance and covarience of the estimates of theta
+  theta_var1 <- 1/(n-1)*sum(h1*f1/g1-theta_hat1)^2
+  theta_var2 <- 1/(n-1)*sum(h2*f2/g2-theta_hat2)^2
+  cov_theta <- 1/(n-1)*sum(h1*f1/g1-theta_hat1)*sum(h2*f2/g2-theta_hat2)
+  var_theta <- 1/n*(1/4*theta_var1+1/4*theta_var2+1/2*cov_theta)
+
+  return(c(theta_hat,var_theta))
+}
+```
+## 3(b)
+
+We will now use $n=5*10^4$ pairs of samples to estimate $\theta$.
+```{r}
+test_antithetic <- antithetic(50000,4)
+conf_int_anti <- confidence_interval(test_antithetic[1],test_antithetic[2])
+```
+ In this case we have used half as many many samples as in C2, but because the antithetic function produces pairs we end up with $n=10^5$ samples wich is the same as in C2. Therefore it is expected to have very similar confidence interval as the one from the importance sampling with $n=10^5$.
+The 95% confidence interval for $n=5*10^4$ for the antithetic function is: `r conf_int_anti`.
+The 95% confidence interval for $n=5*10^4$ for the importane sampling is: `r conf_intC2`.
+
+As expected the confidence intervals have the same precision.
+
+
+
+
+# Problem D
+
+## 1
+Here we look at multinomial mass function $f(\vec{y}|\theta)\propto(2+\theta)^{125}(1-\theta)^{38}\theta^{34}$. When you use a uniform prior distribution on $(0,1)$, the resulting posterior density becomes
+$$\begin{equation}
+  f(\theta|\vec{y})\propto(2+\theta)^{125}(1-\theta)^{38}\theta^{34}.
+\end{equation}$$
+We can use rejection sampling to sample from this distribution.
+```{r, fig.cap="Histogram of samples from the multinomial mass function. The mass function is plotted as a red line."}
+#Function f*(theta|y)
+f_theta_given_y = function(theta) {
+  y1 = 125
+  y2 = 18
+  y3 = 20
+  y4 = 34
+  f = (2+theta)^y1 * (1-theta)^(y2+y3) * theta^y4 # function f*(theta|y)
+  return(f)
+}
+
+#Calculates acceptance probability
+accept_prob = function(t) {
+  c = optimize(f_theta_given_y, interval = c(0, 1), maximum = TRUE) # find maximum of f*, to use as the constant c
+  alpha = f_theta_given_y(t) / c$objective # acceptance probability
+  return(alpha)
+}
+
+#Samples from the multinomial mass function
+sample_D1 = function(n) {
+  X = 1:n
+  for (i in 1:n) {
+    accept = 0
+    while(accept == 0) {
+      u = runif(1) # sample from U[0,1]
+      theta = runif(1) # sample from proposal density U[0,1]
+      alpha = accept_prob(theta) # find the acceptance probability alpha 
+      if (u<=alpha) { # if u is smaller than the acceptance probability, the value for theta is accepted
+        accept = 1
+        X[i] = theta
+      }
+    }
+  }  
+  return(X)
+}
+
+#The multinomial mass function
+mass_function = function(theta) {
+  int = integrate(f_theta_given_y, 0, 1) # integrate f*(theta|y) from 0 to 1
+  c = 1 / (int$value) # use integral to find the normalizing constant
+  return(c*f_theta_given_y(theta)) # f(theta|y)
+}
+
+#Tests the implementation
+test_D1 = function(n) {
+  samples = sample_D1(n)
+  hist(samples, breaks = 30, freq = FALSE, main = bquote("Histogram of samples"))
+  curve(mass_function, col = "red", lwd = 2, add=TRUE)
+}
+
+test_D1(10000)
+```
+The histogram above shows our samples, while the red line is the function we want to sample from. The line corresponds well with the histogram, which indicates that we have implemented out sampling algorithm correctly. 
+
+## 2
+The posterior mean is given as 
+\begin{equation}
+  E(\theta|\vec y)=\int\theta f(\theta|\vec y)d\theta
+\end{equation}
+This integral can be approximated using Monte Carlo integration. 
+```{r}
+#Function that uses Monte-Carlo integration to approximate the posterior mean
+monte_carlo = function(M) {
+  theta = sample_D1(M) # sample M values of theta
+  est = 1/M * sum(theta) # use samples to estimate the mean 
+  return(est)
+}
+
+#The integrand of the posterior mean
+func = function(theta) {
+  y1 = 125
+  y2 = 18
+  y3 = 20
+  y4 = 34
+  
+  f1 = f_theta_given_y(theta) # find f*(theta|y)
+  int = integrate(f_theta_given_y, 0, 1) # integrate f*(theta|y) from 0 to 1
+  c = 1 / (int$value) # use integral to find the normalizing constant
+  f = c * f1 # f(theta|y) = cf*(theta|y)
+  g = theta * f # the integrand needed to find the posterior mean
+  return(g)
+}
+
+#Tests the implementation
+test_D2 = function(M) {
+  est = monte_carlo(M) # find estimate of the posterior mean using Monte Carlo integration
+  real = integrate(func, 0, 1) # find the posterior mean using numerical integration
+  post_mean = c(est, real)
+  return(post_mean)
+}
+
+m = test_D2(10000)
+```
+
+When we use Monte Carlo integration we find that the posterior mean is `r m[1]`. In order to test this result we have also calculated the posterior mean using a method of numerical integration in R, which gives us the value `r m[2]`. These two result are fairly similar.
+
+
+## 3
+The expected number of iterations needed to find a $\theta$ that is accepted is $c\geq f(\theta|\vec y)/g(\theta)$, where $g(\theta)$ is the uniform distribution. Thus $c=\max_{\theta\in(0,1)}f(\theta|\vec y)$.
+
+``` {r}
+#Checks how many iterations is needed to get a theta that is accepted
+sample_D3 = function(n) {
+  X = 1:n
+  iterates = 0
+  
+  for (i in 1:n) {
+    accept = 0
+    while(accept == 0) {
+      u = runif(1)
+      theta = runif(1)
+      alpha = accept_prob(theta)
+      if (u<=alpha) {
+        accept = 1
+        X[i] = theta
+      }
+      iterates = iterates + 1
+    }
+  }  
+  average = iterates / n # average number of tries 
+  max_val = optimize(f_theta_given_y,interval=c(0,1),maximum = TRUE) # find the maximum value of f*
+  c = integrate(f_theta_given_y,0,1)$value # Find the normalizing constant of f*
+  expected = max_val$objective/c
+  return(c(average,expected))
+}
+
+nr = sample_D3(10000)
+```
+
+Our algorithm uses approximately `r nr[1]` tries to find a value of $\theta$ that is accepted. Theoretically, we expect this number to be `r nr[2]`.
+
+## 4
+
+Now we want to look at a new prior, a the Beta(1,5) distribution. The new posterior distribution then becomes
+$$\begin{equation}
+  f_{new}^* \propto (2+\theta)^{125}(1-\theta)^{42}\theta^{34}.
+\end{equation}$$
+From this we can find the weights
+$$\begin{equation}
+  w(\theta) = \frac{f_{new}(\theta|\vec y)}{f(\theta|\vec y)} \propto \frac{\Gamma(1+5)}{\Gamma(1)\Gamma(5)}\theta^0(1-\theta)^4 = 5(1-\theta)^4
+\end{equation}$$
+Then we can find the self-normalizing mean 
+$$\begin{equation}
+  \tilde\mu_{IS}=\frac{\sum h(\theta_i)w(\theta_i)}{\sum w(\theta_i)}.
+\end{equation}$$
+```{r}
+#Weights needed to estimate posterior mean
+weights = function(theta) {
+  w = 5 * (1-theta)^4 # calculate the weights 
+  return (w)
+}
+
+#Estimate the new posterior mean
+mu_IS = function(n) {
+  theta = sample_D1(n) # sample from 
+  w = weights(theta) # find the weights 
+  est = sum(theta*w) / sum(w) # calculate the self normalizing mean 
+  return(est)
+}
+
+# The new function of f*(theta|y), using beta(1,5) as a prior
+f_new1 = function(theta) {
+  y1 = 125
+  y2 = 18
+  y3 = 20
+  y4 = 34
+  f = (2+theta)^y1 * (1-theta)^(y2+y3+4) * theta^y4
+  return(f)
+}
+
+# The new integrand needed to find the posterior mean
+f_new = function(theta) {
+  y1 = 125
+  y2 = 18
+  y3 = 20
+  y4 = 34
+  
+  f1 = f_new1(theta) # find f*(theta|y)
+  int = integrate(f_new1, 0, 1) # integrate f*(theta|y) from 0 to 1
+  c = 1 / (int$value) # use integral to find the normalizing constant
+  f = c * f1 # f(theta|y) = cf*(theta|y)
+  g = theta * f # the integrand needed to find the posterior mean
+  return(g)
+}
+
+#Tests the implementation
+test_mu_IS = function(n) {
+  est = mu_IS(n)
+  real = integrate(f_new, 0, 1)
+  return(c(est,real))
+}
+
+m = test_mu_IS(1000)
+```
+
+
+The self-normalizing mean becomes `r m[1]`. In order to test this value we can use numerical integration. Then we get `r m[2]`, which is fairly close to the value found from our simulation.
+
+

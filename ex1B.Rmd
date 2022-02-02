@@ -73,3 +73,24 @@ $$
 # Caution: You need to implement the algorithm on log-scale, otherwise you will get NAs already
 # for α around 30.
 ```
+
+
+# Task B3
+
+
+We want to generate $n$ samples of the gamma distribution
+
+$$
+f(x) = \frac{\beta^{\alpha}}{\Gamma (\alpha)} x^{\alpha -1} e^{-\beta}
+$$
+
+
+
+```{r}
+# TODO: Write an R function that generates a vector of n independent samples from f. Use the function
+# to check how many tries the algorithm needs to generate n = 1000 realisations depending on
+# the value of α ∈ (1, 2000]. Generate a plot with values of α on the x-axis and the number of
+# tries used on the y-axis. Interpret the result.
+# Caution: You need to implement the algorithm on log-scale, otherwise you will get NAs already
+# for α around 30.
+```
