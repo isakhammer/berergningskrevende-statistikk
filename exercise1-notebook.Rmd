@@ -151,7 +151,7 @@ From the plot we see that our simulation follows the theoretical values, althoug
 ```
 
 Question 4
-We want to sample from the univariate normal distribution using the Box-Müller algorithm. 
+We want to sample from the univariate normal distribution using the Box-Müller algorithm. We compare it to the normal distribution implemented in R. 
 
 ```{r}
 # n: number of samples to generate
@@ -183,7 +183,7 @@ M=chol(matrix(c(2,1,1,3),dim,dim))
 sigma <- t(M)%*%M
 ```
 
-To simulate from a d-variate normal distribution, we use that $y = \mu + Mx$, where $\Sigma = MM^T$. We simulate $n$ realisations from the multivariate normal distribution below. Note that the code uses $M^T$ because of how the Cholesky function is implemented in R. 
+To simulate from a d-variate normal distribution, we use that $y = \mu + Mx$, where $\Sigma = MM^T$. We simulate $n$ realisations from the multivariate normal distribution below. Note that the code uses $y = \mu + M^Tx$ because of how the Cholesky function is implemented in R. 
 
 ```{r}
 # y: matrix to store the realisations of the multivariate normal distribution
