@@ -54,7 +54,16 @@ The supremum for $a_{-}$ and $b_{+}$ can easily be derived by finding extremal p
 
 ## Task B2b
 
-We now want to generate $n$ samples of $f$
+We now want to generate $n$ samples of $f$ for different values of $alpha$ 
+
+However, the explicit function will quickly become very large for big $\alpha$. To handle this will we introduce the substitution $x = ln(y) = g(y)$ such that $g^{-1} (x) = e^x,  g^{-1}`(x) = e^x $. Hence, using the change of variable function, we get
+
+$$
+\begin{align}
+f_Y (y) &= f_X(g^{-1}(x))\cdot \left| \frac{d g^{-1}(x)} {dx} \right| \\
+  &= f_X(e^x) \cdot  e^x  \quad \text{completely wrong}
+\end{align}
+$$
 
 ```{r}
 # TODO: Write an R function that generates a vector of n independent samples from f. Use the function
