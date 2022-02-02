@@ -14,11 +14,11 @@ X = F^{-1}(u) = - ln (u)/\lambda, \quad 0 \leq u \leq 1
 $$
 
 We now want to show that this is true using simulation from the inverse cumulative distribution 
-
+```{r}
 # n: number of samples to generate
 # rate: the rate
 # expdist returns a vector with generated random numbers from exponential distribution
-```{r}
+
 expdist <- function(rate, n) {
    u <- runif(n)
    x <-  -log( (1/rate)*( 1 - u))/rate
