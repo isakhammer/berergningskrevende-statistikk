@@ -45,7 +45,7 @@ uppermc <- monte_carlo_test[1] + qnorm(0.975)*sqrt(monte_carlo_test[2])
 ```
 The estimate of the probability $P(X>4)$ is `r monte_carlo_test[1]`. The confidence interval for $\theta$ is [`r lowermc`, `r uppermc`].
 
-Question C2
+Question C 2
 We want to use importance sampling to estimate $P(X>4)$. To determine the normalizing constant $c$, we use that the density $g(x)$ must integrate to 1, and we get that $c = e^8$. To estimate $P(X>4)$ by importance sampling, we can estimate $\int f(x)h(x)dx$ with $\frac{1}{N}\sum_{i=1}^N\frac{f(x_i)h(x_i)}{g(x_i)}$, where $x_i$ are sampled from the distribution $g(x)$, and in our case this is done by inversion sampling. 
 
 The function we want to sample from is 
@@ -88,3 +88,23 @@ lowerim <- importance_test[1] + qnorm(0.025)*sqrt(importance_test[2])
 upperim <- importance_test[1] + qnorm(0.975)*sqrt(importance_test[2])
 ```
 The estimate of $P(X>4)$ with importance sampling is `r importance_test[1]`. The confidence interval for $\theta$ with importance sampling is [`r lowerim`, `r upperim`]. Compared to the confidence interval for Monte Carlo integration [`r lowermc`, `r uppermc`], we see that the confidence interval from importance sampling is smaller, and therefore we prefer importance sampling over Monte Carlo integration for this problem. 
+
+We want to find how many samples we need to get the same precision for Monte Carlo integration as with importance sampling. We test with some values of $n$.
+```{r}
+monte_carlo_test5 <- monte_carlo(10^5)
+monte_carlo_test6 <- monte_carlo(10^6)
+monte_carlo_test7 <- monte_carlo(10^7)
+
+lowermc5 <- monte_carlo_test5[1] + qnorm(0.025)*sqrt(monte_carlo_test5[2])
+
+uppermc5 <- monte_carlo_test5[1] + qnorm(0.975)*sqrt(monte_carlo_test5[2])
+
+lowermc6 <- monte_carlo_test6[1] + qnorm(0.025)*sqrt(monte_carlo_test6[2])
+
+uppermc6 <- monte_carlo_test6[1] + qnorm(0.975)*sqrt(monte_carlo_test6[2])
+
+lowermc7 <- monte_carlo_test7[1] + qnorm(0.025)*sqrt(monte_carlo_test7[2])
+
+uppermc7 <- monte_carlo_test5[1] + qnorm(0.975)*sqrt(monte_carlo_test7[2])
+```
+The confidence intervals for $n = 10^5, 10^6$ and $10^7$ with Monte Carlo integration are respectively: [`r lowermc5`, `r uppermc5`], [`r lowermc6`, `r uppermc6`], and [`r lowermc7`, `r uppermc7`]. We see that the confidence interval has a similar size for Monte Carlo integration as for importance sampling for $n = 10^6$, but with $n = 10^7$ the precision is even better. 
