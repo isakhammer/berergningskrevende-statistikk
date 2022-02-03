@@ -2,7 +2,7 @@
 title: "Exercise 1C"
 output: html_notebook
 ---
-Question C1
+Question C 1
 ```{r}
 # Delete this before the exercise is finished, only for help 
 mynormal <- function(n) {
@@ -38,11 +38,53 @@ monte_carlo_test <- monte_carlo(n)
 # lower: lower limit of confidence interval
 # upper: upper limit of confidence interval
 
-lower <- monte_carlo_test[1] + qnorm(0.025)*sqrt(monte_carlo_test[2])
+lowermc <- monte_carlo_test[1] + qnorm(0.025)*sqrt(monte_carlo_test[2])
 
-upper <- monte_carlo_test[1] + qnorm(0.975)*sqrt(monte_carlo_test[2])
+uppermc <- monte_carlo_test[1] + qnorm(0.975)*sqrt(monte_carlo_test[2])
 
 ```
-The estimate of the probability $P(X>4)$ is `r monte_carlo_test[1]`. The confidence interval for $\theta$ is [`r lower`, `r upper`].
+The estimate of the probability $P(X>4)$ is `r monte_carlo_test[1]`. The confidence interval for $\theta$ is [`r lowermc`, `r uppermc`].
 
+Question C2
+We want to use importance sampling to estimate $P(X>4)$. To determine the normalizing constant $c$, we use that the density $g(x)$ must integrate to 1, and we get that $c = e^8$. To estimate $P(X>4)$ by importance sampling, we can estimate $\int f(x)h(x)dx$ with $\frac{1}{N}\sum_{i=1}^N\frac{f(x_i)h(x_i)}{g(x_i)}$, where $x_i$ are sampled from the distribution $g(x)$, and in our case this is done by inversion sampling. 
 
+The function we want to sample from is 
+$$
+g(x)= \begin{cases} 
+      cxe^{-0.5x^2} &  x > 4 \\
+      0 & \text{otherwise }
+   \end{cases}
+$$
+By integrating from $t=4$ to an arbitrary $x$, we find that the cumulative distribution is 
+
+$$
+G(x) = 1-e^{8-0.5x^2}
+$$
+Solving this equation for $x$ we get
+
+$$
+G^{-1}(u) = \sqrt{16-2log(1-u)}
+$$
+```{r}
+# importance_sampling estimates the probability via the density g
+# n: number of samples to generate
+importance_sampling <- function(n) {
+  u = runif(n)
+  x = sqrt(16-2*log(1-u))
+  f = 1/sqrt(2*pi)*exp(-0.5*x^2)
+  g = x*exp(-0.5*x^2+8)
+  h = indicator_func(x)
+  theta_estimate = (1/n)*sum(h*f/g)
+  variance_estimate = (1/(n*(n-1)))*sum(h*f/g-theta_estimate)^2
+  return(c(theta_estimate, variance_estimate))
+}
+
+n = 10^5
+importance_test <- importance_sampling(n)
+
+# lower: lower limit of confidence interval
+# upper: upper limit of confidence interval
+lowerim <- importance_test[1] + qnorm(0.025)*sqrt(importance_test[2])
+upperim <- importance_test[1] + qnorm(0.975)*sqrt(importance_test[2])
+```
+The estimate of $P(X>4)$ with importance sampling is `r importance_test[1]`. The confidence interval for $\theta$ with importance sampling is [`r lowerim`, `r upperim`]. Compared to the confidence interval for Monte Carlo integration [`r lowermc`, `r uppermc`], we see that the confidence interval from importance sampling is smaller, and therefore we prefer importance sampling over Monte Carlo integration for this problem. 
