@@ -2,3 +2,44 @@
 title: "Exercise 1C"
 output: html_notebook
 ---
+```{r}
+# Delete this before the exercise is finished, only for help 
+mynormal <- function(n) {
+  u1=runif(n)
+  u2=runif(n)
+  return (sqrt(-2*log(u1))*sin(2*pi*u2))
+}
+```
+
+
+We want to estimate $P(X>4)$ by Monte Carlo integration, so we use that we can approximate the integral $\int h(x)f(x)dx$ with the sum $\frac{1}{N}\sum_{i=1}^Nh(x_i)$. Since we only want a part of the domain, we use the indicator function $I(x>4)$ as $h(x)$. We use the Box-Muller algorithm from before to draw samples from the normal distribution. 
+
+```{r}
+# indicator_func return
+indicator_func <- function(x) {
+  return (x>4)
+}
+
+# monte_carlo estimates the probability and the variance
+# n: number of samples to generate when estimating
+
+monte_carlo <- function(n) {
+  normal = mynormal(n)
+  h = indicator_func(normal)
+  theta_estimate = (1/n)*sum(h)
+  variance_estimate = var(h)/(n-1)
+  return(c(theta_estimate, variance_estimate))
+}
+
+n = 100000
+
+monte_carlo_test <- monte_carlo(n)
+# lower: lower limit of confidence interval
+# upper: upper limit of confidence interval
+
+lower <- monte_carlo_test[1] + qnorm(0.025)*sqrt(monte_carlo_test[2])
+
+upper <- monte_carlo_test[1] + qnorm(0.975)*sqrt(monte_carlo_test[2])
+
+```
+The estimate of the probability $P(X>4)$ is `r monte_carlo_test[1]`. The confidence interval for $\theta$ is [`r lower`, `r upper`].
