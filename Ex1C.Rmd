@@ -2,6 +2,7 @@
 title: "Exercise 1C"
 output: html_notebook
 ---
+Question C1
 ```{r}
 # Delete this before the exercise is finished, only for help 
 mynormal <- function(n) {
@@ -43,3 +44,5 @@ upper <- monte_carlo_test[1] + qnorm(0.975)*sqrt(monte_carlo_test[2])
 
 ```
 The estimate of the probability $P(X>4)$ is `r monte_carlo_test[1]`. The confidence interval for $\theta$ is [`r lower`, `r upper`].
+
+
