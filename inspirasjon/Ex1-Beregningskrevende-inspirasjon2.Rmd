@@ -12,6 +12,8 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+#install.packages("bookdown", dependencies = TRUE)
+
 ```
 
 # Problem A
@@ -348,7 +350,7 @@ s = testB1(alpha, 100000)
 
 If $X\sim\text{Gamma}(\alpha, \beta)$ then $E[X] = \alpha/\beta$ and $Var[E]=\alpha/\beta^2$. Here $\alpha =$ `r alpha` and $\beta=1$, which means that $E[X]=Var[X]=$ `r alpha`. Our samples have mean `r mean(s)` and variance `r var(s)`.
 
-From the plot we see that our sample matches the teoretical distribution, so our function is correct.
+From the plot we see that our sample matches the theoretical distribution, so our function is correct.
 
 
 ## 2(a)
