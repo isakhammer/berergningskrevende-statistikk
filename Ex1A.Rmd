@@ -150,9 +150,9 @@ checkfunc3 <- function(alpha, x) {
 outval3 <- dist3(alpha, n)
 ggplot(data.frame(x = outval3[[1]], y = outval3[[2]]))+
   geom_histogram(aes(x=x, y=..density..),alpha=0.2)+geom_line(data = data.frame(x=x,y=checkfunc3(alpha,x)), aes(x=x, y=y), color = "blue")
-From the plot we see that our simulation follows the theoretical values, although it could be better. 
-
+  
 ```
+From the plot we see that our simulation follows the theoretical values, although it could be better. 
 
 ## Question 4
 We want to sample from the univariate normal distribution using the Box-Müller algorithm. We compare it to the normal distribution implemented in R. 
