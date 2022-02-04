@@ -29,6 +29,7 @@ lambda <- 1
 outval <- expdist(lambda, n)
 x = outval[[1]]
 y = outval[[2]]
+library(ggplot2)
 ggplot(data.frame(x=x))+geom_histogram(aes(x=x, y = ..density..), bins = 50)+geom_line(data = data.frame(x=x,y=dexp(x, rate = 1)), aes(x=x, y=y), color = "blue")+xlim(0,5)
 ```
 From the plot one can see that the exponential distribtion that we generated and the exponential distribution in R closely follow each other, which means that our implementation is correct.
@@ -51,7 +52,7 @@ $$
 G(x) = 
 \begin{cases}
 \frac{c}{\alpha}x^{\alpha},& \quad 0 < x < 1 \\
-\frac{c}{\alpha} -c(e^{-x} - e^{-1}),& \quad x  \ge 1 \\
+1-ce^{-x},& \quad x  \ge 1 \\
 0, &\quad \text{otherwise}
 \end{cases}
 $$
@@ -60,8 +61,8 @@ And similarly with the inverse cumulative function
 
 $$
 G^{-1} (u) = \begin{cases}
- \frac{1}{\alpha} ln(u \frac{\alpha}{c}), \quad 0<u < c/\alpha \\
--ln( e^{-1} - u/c + \frac{1}{\alpha}), \quad u\geq c/\alpha \\
+ (\frac{u\alpha}{c})^{\frac{1}{\alpha}}, \quad 0<u < c/\alpha \\
+-ln(\frac{1-u}{c}), \quad u\geq c/\alpha \\
 0, \quad \text{otherwise}
 \end{cases}
 $$
@@ -84,17 +85,27 @@ dist1 <- function(alpha, n) {
    u <- runif(n)
    L = u<ca(alpha)/alpha
    res = c(1:n)*0
-   res[L] = (u[L]*alpha/ca(alpha[L]))^(1/alpha)
-   res[!L] = -log((1-u[!L])/ca(alpha[!L]))
-   return(list(x,u))
+   res[L] = (u[L]*alpha/ca(alpha))
+   res[!L] = -log((1-u[!L])/ca(alpha))
+   return(list(res,u))
 }
+
+g_test = function(alpha, x) {
+  res = c(1:length(x))*0
+  L = x<1&x>0
+  res[L] = ca(alpha)*x^(alpha-1)
+  res[!L] = ca(alpha)*exp(-x)
+  return (res)
+}
+
 n <- 60000
 alpha <- 0.5
 outval1 <- dist1(alpha, n)
-library(ggplot2)
-data.frame(x = outval1[[1]], y = outval1[[2]])
-ggplot(data.frame(x = outval1[[1]], y = outval1[[2]]))+
-  geom_line(aes(x=x,y=y))
+x <- outval1[[1]]
+y <- outval1[[2]]
+
+hist(x, breaks = 50, freq = FALSE, main = bquote("Histogram of samples when "~alpha == .(alpha)))
+curve(g_test(alpha, x), col = "red", lwd = 2, add=TRUE)
 ```
 
 Question 3 a
@@ -145,12 +156,12 @@ mynormal <- function(n) {
   u2=runif(n)
   return (sqrt(-2*log(u1))*sin(2*pi*u2))
 }
-n = 10000
+n = 100000
 mynormalout <- mynormal(n)
 std_normal_data <- data.frame(x=mynormalout)
 x <- seq(-4, 4, length=100)
 ggplot(std_normal_data)+
-  geom_histogram(aes(x=x, y=..density..),bins=100)+geom_line(data = data.frame(x=x,y=dnorm(x)), aes(x=x, y=y), color = "blue")
+  geom_histogram(aes(x=x, y=..density..),bins=50)+geom_line(data = data.frame(x=x,y=dnorm(x)), aes(x=x, y=y), color = "blue")
 ```
 
 Question 5
