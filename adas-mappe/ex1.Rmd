@@ -85,7 +85,7 @@ dist1 <- function(alpha, n) {
    u <- runif(n)
    L = u<ca(alpha)/alpha
    res = c(1:n)*0
-   res[L] = (u[L]*alpha/ca(alpha))
+   res[L] = (u[L]*alpha/ca(alpha))^(1/alpha)
    res[!L] = -log((1-u[!L])/ca(alpha))
    return(list(res,u))
 }
@@ -93,8 +93,8 @@ dist1 <- function(alpha, n) {
 g_test = function(alpha, x) {
   res = c(1:length(x))*0
   L = x<1&x>0
-  res[L] = ca(alpha)*x^(alpha-1)
-  res[!L] = ca(alpha)*exp(-x)
+  res[L] = ca(alpha)*x[L]^(alpha-1)
+  res[!L] = ca(alpha)*exp(-x[!L])
   return (res)
 }
 
