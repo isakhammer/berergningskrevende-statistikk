@@ -2,8 +2,8 @@
 title: "Exercise 1 - TMA4300 Computer Intensive Statistical Methods"
 output: pdf_document
 ---
-Problem A
-Question 1
+# Problem A
+## Question 1
 We first want to write an R function that generates  samples from a exponential distribution with rate parameter $\lambda$. 
 We know that the cumulative exponential distrobution takes the form $$ F(x;\lambda) =  1 - \lambda e ^{-\lambda x},  \quad x \ge 0 
 $$
@@ -35,7 +35,7 @@ ggplot(data.frame(x=x))+geom_histogram(aes(x=x, y = ..density..), bins = 50)+geo
 From the plot one can see that the exponential distribtion that we generated and the exponential distribution in R closely follow each other, which means that our implementation is correct.
 
 
-Question 2 a
+## Question 2 a
 
 Let us consider a new example where the PDF has the form
 $$
@@ -69,7 +69,7 @@ $$
 
 with c as $\frac{e\alpha}{e+\alpha}$ in all the expressions, which is found by using that the density integrated over the whole space must be 1. 
 
-Question 2 b 
+## Question 2 b 
 
 This distribution can be plotted by using the inverse cumulative distribution as before.
 
@@ -164,7 +164,7 @@ ggplot(std_normal_data)+
   geom_histogram(aes(x=x, y=..density..),bins=50)+geom_line(data = data.frame(x=x,y=dnorm(x)), aes(x=x, y=y), color = "blue")
 ```
 
-Question 5
+## Question 5
 We want to sample from a d-variate normal distribution with mean $\mu$ and covariance matrix $\Sigma$. We use the function mynormal with the Box-Muller algorithm to construct a vector with values of $\mu$ and a positive definite matrix $\Sigma = MM^T$, where $M$ is a d by d matrix from a normal distribution. As we don’t have given values of$\mu$ and $\Sigma$, we just choose a $\mu$ and $\Sigma$ such that $\Sigma$ is positive definite by the Cholesky factorization. Note that in the code, sigma = $\mu^T\mu$ because of how the Cholesky function is implemented in R. 
 
 ```{r}
