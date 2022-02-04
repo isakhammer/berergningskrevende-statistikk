@@ -1,2 +1,4 @@
 
-# Computational Statistics![Results-of-Monte-Carlo-Simulation-for-robustness-analysis](https://user-images.githubusercontent.com/43385748/152534712-1ece263b-09dc-40bb-9316-28bc572063c4.png)
+# Computational Statistics
+
+![montecarlo-simulation-emergency-exit-chuckles-l-im-in-danger-imgflip-com-monte-42207646](https://user-images.githubusercontent.com/43385748/152539763-1190f093-309f-40a0-b48d-a6aa3bf1f88d.png)
