@@ -49,25 +49,38 @@ $$
 The cumulative function can be computed with integration
 
 $$
-G(x) = 
-\begin{cases}
-\frac{c}{\alpha}x^{\alpha},& \quad 0 < x < 1 \\
-1-ce^{-x},& \quad x  \ge 1 \\
-0, &\quad \text{otherwise}
-\end{cases}
+\begin{align}
+G(x) &= 
+  \begin{cases}
+  \int_0^x c x^{\alpha- 1}dx ,& \quad 0 < x < 1 \\
+  \int_0^1c x^{\alpha- 1}dx + \int_1^x c e^{-x}dx   ,& \quad x  \ge 1 \\
+  0, &\quad \text{otherwise}
+  \end{cases} \\
+  & = 
+  \begin{cases}
+  \frac{c}{\alpha}x^{\alpha},& \quad 0 < x < 1 \\
+  \frac{c}{\alpha} + ce^{-1} + -ce^{-x}  ,& \quad x  \ge 1 \\
+  0, &\quad \text{otherwise}
+  \end{cases} \\
+  & = 
+  \begin{cases}
+  \frac{c}{\alpha}x^{\alpha},& \quad 0 < x < 1 \\
+  c \frac{\alpha + e}{e \alpha}  -ce^{-x}  ,& \quad x  \ge 1 \\ 0, &\quad \text{otherwise}
+  \end{cases} \\
+\end{align}
 $$
 
-And similarly with the inverse cumulative function
+with c as $\frac{e\alpha}{e+\alpha}$ in all the expressions, which is found by using that the density integrated over the whole space must be 1. 
+
+And similarly with the inverse cumulative function is
 
 $$
 G^{-1} (u) = \begin{cases}
  (\frac{u\alpha}{c})^{\frac{1}{\alpha}}, \quad 0<u < c/\alpha \\
--ln(\frac{1-u}{c}), \quad u\geq c/\alpha \\
+-ln(\frac{\alpha + e}{e \alpha} - u/c), \quad u \geq c/\alpha \\
 0, \quad \text{otherwise}
 \end{cases}
 $$
-
-with c as $\frac{e\alpha}{e+\alpha}$ in all the expressions, which is found by using that the density integrated over the whole space must be 1. 
 
 ## Question 2 b 
 
@@ -108,10 +121,15 @@ hist(x, breaks = 50, freq = FALSE, main = bquote("Histogram of samples when "~al
 curve(g_test(alpha, x), col = "red", lwd = 2, add=TRUE)
 ```
 
-Question 3 a
-The normalizing constant is found by using that a PDF must integrate to 1, and therefore we get $c = \alpha$.
+## Question 3 a
 
-Question 3 b
+Consider the PDF 
+$$
+f(x) = \frac{ce^{\alpha x}}{(1 + e^{\alpha x})^2}, \quad -\infty<x < \infty , \alpha > 0
+$$
+Using basic integration theoru using a trivial substitution can we see $ \int_{-\infty}^{\infty} f(x) dx = c/\alpha$. Hence, since the normalizing constant is found by using that a PDF must integrate to 1, we get $c = \alpha$. 
+
+## Question 3 b
 By integrating the PDF from $-\inf$ to x, we find the CDF: 
 $$ 
 F(x) = \frac{-1}{1+e^{\alpha x}}+1
@@ -121,7 +139,7 @@ $$
 F^{-1}(x) = \frac{1}{\alpha}ln(\frac{-y}{y-1})
 $$
 
-Question 3 c
+## Question 3 c
 We want to use the inversion method to generate random samples from the distribution in question 3b, and compare them with the theoretical values. 
 ```{r}
 # alpha: the parameter alpha
@@ -145,7 +163,7 @@ ggplot(data.frame(x = outval3[[1]], y = outval3[[2]]))+
 ```
 From the plot we see that our simulation follows the theoretical values, although it could be better. 
 
-Question 4
+## Question 4
 We want to sample from the univariate normal distribution using the Box-Müller algorithm. We compare it to the normal distribution implemented in R. 
 
 ```{r}
@@ -220,7 +238,7 @@ We know from task 1 that the $g(y)$ has the form
 # Task B1a
 
 
-## Task B1b
+## Question 1b
 We will now demonstrate how to generate $n$ samples of $f$
 ```{r}
 #TODO: Generate n independent samples from f
