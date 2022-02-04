@@ -30,8 +30,9 @@ outval <- expdist(lambda, n)
 x = outval[[1]]
 y = outval[[2]]
 ggplot(data.frame(x=x))+geom_histogram(aes(x=x, y = ..density..), bins = 50)+geom_line(data = data.frame(x=x,y=dexp(x, rate = 1)), aes(x=x, y=y), color = "blue")+xlim(0,5)
-From the plot one can see that the exponential distribtion that we generated and the exponential distribution in R closely follow each other, which means that our implementation is correct.
 ```
+From the plot one can see that the exponential distribtion that we generated and the exponential distribution in R closely follow each other, which means that our implementation is correct.
+
 
 Question 2 a
 
@@ -82,16 +83,10 @@ ca <- function(alpha) {
 dist1 <- function(alpha, n) {
    u <- runif(n)
    L = u<ca(alpha)/alpha
-   res = zeros(n)
-   res[L] = (u*alpha/ca(alpha))^(1/alpha)
-   res[!L] = -log((1-u)/ca(alpha))
+   res = c(1:n)*0
+   res[L] = (u[L]*alpha/ca(alpha[L]))^(1/alpha)
+   res[!L] = -log((1-u[!L])/ca(alpha[!L]))
    return(list(x,u))
-   #if u < ca(alpha)/alpha:
-  #   x <- (u*alpha/ca(alpha))^(1/alpha)
-   #else if u >= ca(alpha)/alpha:
-    # x <- -log((1-u)/ca(alpha))
-   #list = list(x, u)
-   #return(list)
 }
 n <- 60000
 alpha <- 0.5
@@ -100,7 +95,6 @@ library(ggplot2)
 data.frame(x = outval1[[1]], y = outval1[[2]])
 ggplot(data.frame(x = outval1[[1]], y = outval1[[2]]))+
   geom_line(aes(x=x,y=y))
-#plot(outval1[[1]], outval1[[2]], xlab = "x", ylab = "y")
 ```
 
 Question 3 a
@@ -136,8 +130,9 @@ checkfunc3 <- function(alpha, x) {
 outval3 <- dist3(alpha, n)
 ggplot(data.frame(x = outval3[[1]], y = outval3[[2]]))+
   geom_histogram(aes(x=x, y=..density..),alpha=0.2)+geom_line(data = data.frame(x=x,y=checkfunc3(alpha,x)), aes(x=x, y=y), color = "blue")
-From the plot we see that our simulation follows the theoretical values, although it could be better. 
+
 ```
+From the plot we see that our simulation follows the theoretical values, although it could be better. 
 
 Question 4
 We want to sample from the univariate normal distribution using the Box-Müller algorithm. We compare it to the normal distribution implemented in R. 
