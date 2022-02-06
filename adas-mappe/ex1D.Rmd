@@ -17,12 +17,17 @@ f <- function(theta, y) {
   return((2+theta)^y[1]*(1-theta)^(y[2]+y[3])*theta^y[4])
 }
 
+# f_normalized is the posterior function, normalized
+f_normalized <- function(theta, y) {
+  c = integrate(f_theta_given_y,0,1,y)$value
+  return(f/c)
+}
+
 # alpha finds the acceptance probability alpha
 alpha <- function(theta, y) {
   max_f = optimize(f, interval = c(0,1), maximum = TRUE, y=y)
   c = max_f$objective
-  g = runif(1)
-  return(f(theta, y)/(c*g))
+  return(f(theta, y)/c)
 }
 
 # rejection_d samples from the posterior by rejection sampling
@@ -37,7 +42,6 @@ rejection_d <- function(y, n) {
       u = runif(1)
       theta = g()
       alpha = alpha(theta, y)
-      print(alpha)
       if(u <= alpha) {
         out[i] = theta
         finished = 1
@@ -48,20 +52,9 @@ rejection_d <- function(y, n) {
 }
 
 y = c(125,18,20,34)
+n = 10000
 
-#The multinomial mass function
-mass_function = function(theta, y) {
-  int = integrate(f, 0, 1) # integrate f*(theta|y) from 0 to 1
-  c = 1 / (int$value) # use integral to find the normalizing constant
-  return(c*f(theta, y)) # f(theta|y)
-}
+hist(rejection_d(y, n), breaks = 50, freq = FALSE, main = bquote("Histogram of posterior"))
+curve(f_normalized, col = "red", lwd = 2, add = TRUE)
 
-#Tests the implementation
-test_D1 = function(y,n) {
-  samples = rejection_d(y,n)
-  hist(samples, breaks = 30, freq = FALSE, main = bquote("Histogram of samples"))
-  curve(mass_function, col = "red", lwd = 2, add=TRUE)
-}
-
-test_D1(y,10000)
 ```
