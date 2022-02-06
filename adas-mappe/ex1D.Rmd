@@ -19,8 +19,8 @@ f <- function(theta, y) {
 
 # f_normalized is the posterior function, normalized
 f_normalized <- function(theta, y) {
-  c = integrate(f_theta_given_y,0,1,y)$value
-  return(f/c)
+  c = integrate(f,0,1,y)$value
+  return(f(theta,y)/c)
 }
 
 # alpha finds the acceptance probability alpha
@@ -54,7 +54,12 @@ rejection_d <- function(y, n) {
 y = c(125,18,20,34)
 n = 10000
 
-hist(rejection_d(y, n), breaks = 50, freq = FALSE, main = bquote("Histogram of posterior"))
-curve(f_normalized, col = "red", lwd = 2, add = TRUE)
-
+library(ggplot2)
+samples_d1 <- rejection_d(y, n)
+x <- seq(0,1,0.001)
+data_d1 <- data.frame("samples_d1"=samples_d1)
+ggplot(data=data_d1, aes(data_d1$samples_d1)) +
+geom_histogram(aes(y=..density..), breaks = seq(0, 1, by = 0.005)) +theme(plot.title = element_text(hjust = 0.5))+
+xlim(c(0.4,0.85)) + labs(title="Posterior density", x="x", y="Density") +
+stat_function(fun = f_normalized, args = list(y), color = "red")
 ```
