@@ -127,10 +127,10 @@ Consider the PDF
 $$
 f(x) = \frac{ce^{\alpha x}}{(1 + e^{\alpha x})^2}, \quad -\infty<x < \infty , \alpha > 0
 $$
-Using basic integration theoru using a trivial substitution can we see $ \int_{-\infty}^{\infty} f(x) dx = c/\alpha$. Hence, since the normalizing constant is found by using that a PDF must integrate to 1, we get $c = \alpha$. 
+Using basic integration theory using a trivial substitution can we see $$ \int_{- \infty}^{\infty} f(x) dx = c \alpha.$$ Hence, since the normalizing constant is found by using that a PDF must integrate to 1, we get $c = \alpha$. 
 
 ## Question 3 b
-By integrating the PDF from $-\inf$ to x, we find the CDF: 
+By integrating the PDF from $- \infty$ to x, we find the CDF: 
 $$ 
 F(x) = \frac{-1}{1+e^{\alpha x}}+1
 $$
@@ -141,6 +141,7 @@ $$
 
 ## Question 3 c
 We want to use the inversion method to generate random samples from the distribution in question 3b, and compare them with the theoretical values. 
+
 ```{r}
 # alpha: the parameter alpha
 # n: number of samples to be generated
@@ -156,6 +157,10 @@ x <- seq(from = -10, to = 10, length.out = 100)
 checkfunc3 <- function(alpha, x) {
   return(alpha*exp(alpha*x)/(1+exp(alpha*x))^2)
 }
+
+library(ggplot2) #May be removed
+n <- 1000
+alpha = 0.4
 outval3 <- dist3(alpha, n)
 ggplot(data.frame(x = outval3[[1]], y = outval3[[2]]))+
   geom_histogram(aes(x=x, y=..density..),alpha=0.2)+geom_line(data = data.frame(x=x,y=checkfunc3(alpha,x)), aes(x=x, y=y), color = "blue")
@@ -245,7 +250,6 @@ We will now demonstrate how to generate $n$ samples of $f$
 ```
 
 
-# Problem B
 ## Question 2a
 
 We can define the domain 
@@ -358,8 +362,11 @@ lowermc <- monte_carlo_test[1] + qnorm(0.025)*sqrt(monte_carlo_test[2])
 
 uppermc <- monte_carlo_test[1] + qnorm(0.975)*sqrt(monte_carlo_test[2])
 
+cat("P(x>4): ", monte_carlo_test[1])
+cat("Confidence interval: (", lowermc, ",", uppermc, ")")
+cat("theta: (", lowermc, ",", uppermc, ")")
 ```
- The estimate of the probability $P(X>4)$ is r monte_carlo_test[1]. The confidence interval for $\theta$ is [r lowermc, r uppermc]. 
+ The estimate of the probability $P(X>4)$ and confidence interval for $\theta$ is printed above.
 
 ## Question 2
 We want to use importance sampling to estimate $P(X>4)$. To determine the normalizing constant $c$, we use that the density $g(x)$ must integrate to 1, and we get that $c = e^8$. To estimate $P(X>4)$ by importance sampling, we can estimate $\int f(x)h(x)dx$ with $\frac{1}{N}\sum_{i=1}^N\frac{f(x_i)h(x_i)}{g(x_i)}$, where $x_i$ are sampled from the distribution $g(x)$, and in our case this is done by inversion sampling. 
@@ -402,8 +409,12 @@ importance_test <- importance_sampling(n)
 # upper: upper limit of confidence interval
 lowerim <- importance_test[1] + qnorm(0.025)*sqrt(importance_test[2])
 upperim <- importance_test[1] + qnorm(0.975)*sqrt(importance_test[2])
+cat ("P(X>4)= ", importance_test[1])
+cat ("Confidence interval for theta with importance sampling ",  lowerim,  upperim)
+cat ("Confidence interval for Monte Carlo integration ",  lowermc,  uppermc)
 ```
-The estimate of $P(X>4)$ with importance sampling is r importance_test[1]. The confidence interval for $\theta$ with importance sampling is [r lowerim, r upperim]. Compared to the confidence interval for Monte Carlo integration [r lowermc, r uppermc], we see that the confidence interval from importance sampling is smaller, and therefore we prefer importance sampling over Monte Carlo integration for this problem. 
+
+The estimate of $P(X>4)$ with importance sampling is printed above as well with the confidence interval for $\theta$ with importance sampling and the  confidence interval for Monte Carlo integration. We see that the confidence interval from importance sampling is smaller compared to Monte Carlo integration, and therefore we prefer importance sampling over Monte Carlo integration for this problem. 
 
 We want to find how many samples we need to get the same precision for Monte Carlo integration as with importance sampling. We test with some values of $n$.
 ```{r}
@@ -417,8 +428,12 @@ lowermc6 <- monte_carlo_test6[1] + qnorm(0.025)*sqrt(monte_carlo_test6[2])
 uppermc6 <- monte_carlo_test6[1] + qnorm(0.975)*sqrt(monte_carlo_test6[2])
 lowermc7 <- monte_carlo_test7[1] + qnorm(0.025)*sqrt(monte_carlo_test7[2])
 uppermc7 <- monte_carlo_test5[1] + qnorm(0.975)*sqrt(monte_carlo_test7[2])
+
+cat ("Monte carlo integration with n=10^5 has confidence interval  ", lowermc5, uppermc5 )
+cat ("Monte carlo integration with n=10^6 has confidence interval  ", lowermc6, uppermc6 )
+cat ("Monte carlo integration with n=10^7 has confidence interval  ", lowermc7, uppermc7 )
 ```
-The confidence intervals for $n = 10^5, 10^6$ and $10^7$ with Monte Carlo integration are respectively: [r lowermc5, r uppermc5], [r lowermc6, r uppermc6], and [r lowermc7, r uppermc7]. We see that the confidence interval has a similar size for Monte Carlo integration as for importance sampling for $n = 10^6$, but with $n = 10^7$ the precision is even better. 
+The confidence intervals for $n = 10^5, 10^6$ and $10^7$ with Monte Carlo integration are printed above. We see that the confidence interval has a similar size for Monte Carlo integration as for importance sampling for $n = 10^6$, but with $n = 10^7$ the precision is even better. 
 
 ## Question 3 a
 We want to produce $n$ pairs of antithetic variates from the specified distribution. The estimate is given by averaging the samples from importance sampling. The function below also estimates $\theta$ and the variance to be used in the confidence interval. 
@@ -459,13 +474,17 @@ antithetic_test <- antithet(5*10^4)
 loweranti <- antithetic_test[1] + qnorm(0.025)*sqrt(antithetic_test[2])
 
 upperanti <- antithetic_test[1] + qnorm(0.975)*sqrt(antithetic_test[2])
+
+cat("probability P(X>4) with anthetic variables is : ", antithetic_test)
+cat("Confidence interval: ", loweranti, upperanti)
+
 ```
-The estimate of the probability $P(X>4)$ with antithetic variables is r antithetic_test[1]. The confidence interv al is r loweranti, r upperanti. We see that as expected, the precision of the antithetic variables and the importance sampling is similar. We must use a value of $n$ that is half as big for antithetic variables as for importance sampling because antithetic variables produces pairs of variables, and therefore the total amount of simulated samples will be the same in the end. 
+The estimate of the probability $P(X>4)$ with antithetic variables is printed above as well with the confidence interval. We see that as expected, the precision of the antithetic variables and the importance sampling is similar. We must use a value of $n$ that is half as big for antithetic variables as for importance sampling because antithetic variables produces pairs of variables, and therefore the total amount of simulated samples will be the same in the end. 
 
 
 
-## Problem D
-Question D 1 
+# Problem D
+## Question 1 
 We want to sample from 
 $$
 f(\theta|\mathbf{y})\propto(2+\theta)^{y_1}(1-\theta)^{y_2+y_3}\theta^{y_4}
