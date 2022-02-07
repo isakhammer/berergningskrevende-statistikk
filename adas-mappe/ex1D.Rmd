@@ -166,6 +166,7 @@ which is biased, but for $n\to\inf$ it becomes approximately unbiased.
 fnew <- function(theta, y) {
   fnew = 5*(1-theta)^4*(2+theta)^y[1]*(1-theta)^(y[2]+y[3])*theta^y[4]
 }
+
 # weight calculates the self-normalizing weights to use in importance sampling
 weight <- function(theta, y) {
   return(fnew(theta, y)/f(theta, y))
@@ -174,11 +175,10 @@ weight <- function(theta, y) {
 # fnew_normalized calculates the normalized new posterior distribution
 fnew_normalized <- function(theta, y) {
   const = integrate(fnew, 0, 1, y)$value
-  return(fnew(theta, y)/c)
+  return(fnew(theta, y)/const)
 }
 
-fnew_normalized(0.5, y)
-
+fnew_normalized(0.5,y)
 # importance_d4 estimates the mean via importance sampling
 # y: observed values
 # n: number of samples to use in the estimation
@@ -201,5 +201,6 @@ numerical_d4 <- function(y) {
   return(integrate(integrand_d4, 0,1,y)$value)
 }
 
-#num_d4 <- numerical_d4(y)
+num_d4 <- numerical_d4(y)
 ```
+The simulated expected value is `r simulated_d4`, and the numerical value is `r num_d4`. We see that they are equal. 
