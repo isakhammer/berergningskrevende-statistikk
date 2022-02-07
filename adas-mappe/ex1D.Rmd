@@ -95,7 +95,7 @@ stat_function(fun = f_normalized, args = list(y), color = "red")+geom_vline(xint
 Question D 3
 The overall acceptance probability is 
 $$
-P(U\leq\frac{f(x)}{cg(x)}) = \int_{-\infty}^{\infty}\frac{f(x)}{cg(x)}g(x)dx = \int_{-\infty}^{\infty}\frac{f(x)}{c}dx = \frac{1}{c}
+P(U\leq\frac{f(\theta)}{cg(\theta)}) = \int_{-\infty}^{\infty}\frac{f(\theta)}{cg(\theta)}g(\theta)d\theta = \int_{-\infty}^{\infty}\frac{f(\theta)}{c}d\theta = \frac{1}{c}
 $$
 which implies that the number of trials to simulate one sample is $c$.
 
@@ -142,4 +142,64 @@ c_numerical <- c_const(y)
 ```
 The number of trials in the simulation until one acceptance is `r number_of_trials`, and the numerical calcualtion of the theoretical number of trials is `r c_numerical`.
 
-D
+Question D 4
+We want to use the Beta(1,5) distribution as the prior, instead of the U(0,1) distribution and importance sampling with self-normalizing weights. The new prior with a Beta(1,5) distribution is: 
+$$
+f(\theta) = \frac{\Gamma(6)}{\Gamma(5)}(1-\theta)^4=5(1-\theta)^4
+$$
+And the new posterior destribution becomes
+$$
+f_{new}(\theta|\mathbf{y}) \propto f(\theta)f(\mathbf{y}|\theta) = 5(1-\theta)^4(2+\theta)^{y_1}(1-\theta)^{y_2+y_3}\theta^{y_4}
+$$
+We use importance sampling with self-normalizing weights, such that the weights become 
+$$
+w(\theta_i) = \frac{f_{new}(\theta_i|\bf{y})}{f(\theta_i|\bf{y})}
+$$
+and because our estimate is based on the samples of $\theta$ in part D 2, we use the unnormalized $f(\theta|\bf{y})$ as $g(\theta)$ from part D 2 in the expression for the weights $w(\theta_i)$. The estimate of the mean is then 
+$$
+\mu = \frac{\sum_{i=1}^N\theta_iw(\theta_i)}{\sum_{i=1}^Nw(\theta_i)}
+$$
+which is biased, but for $n\to\inf$ it becomes approximately unbiased. 
+
+```{r}
+#fnew calculates the unnormalized new posterior distribution
+fnew <- function(theta, y) {
+  fnew = 5*(1-theta)^4*(2+theta)^y[1]*(1-theta)^(y[2]+y[3])*theta^y[4]
+}
+# weight calculates the self-normalizing weights to use in importance sampling
+weight <- function(theta, y) {
+  return(fnew(theta, y)/f(theta, y))
+}
+
+# fnew_normalized calculates the normalized new posterior distribution
+fnew_normalized <- function(theta, y) {
+  const = integrate(fnew, 0, 1, y)$value
+  return(fnew(theta, y)/c)
+}
+
+fnew_normalized(0.5, y)
+
+# importance_d4 estimates the mean via importance sampling
+# y: observed values
+# n: number of samples to use in the estimation
+importance_d4 <- function(y, n) {
+  theta = rejection_d(y, n)
+  estimate = sum(theta*weight(theta, y))/sum(weight(theta,y))
+  return(estimate)
+}
+
+n = 10000
+simulated_d4 <- importance_d4(y, n)
+
+# integrand_d4 is the expression to integrate
+integrand_d4 <- function(theta, y) {
+  return(fnew_normalized(theta, y)*theta)
+}
+
+# numerical_d4 numerically calculates the integral
+numerical_d4 <- function(y) {
+  return(integrate(integrand_d4, 0,1,y)$value)
+}
+
+#num_d4 <- numerical_d4(y)
+```
