@@ -359,7 +359,7 @@ lowermc <- monte_carlo_test[1] + qnorm(0.025)*sqrt(monte_carlo_test[2])
 uppermc <- monte_carlo_test[1] + qnorm(0.975)*sqrt(monte_carlo_test[2])
 
 ```
-<!-- The estimate of the probability $P(X>4)$ is `r monte_carlo_test[1]`. The confidence interval for $\theta$ is [`r lowermc`, `r uppermc`]. -->
+ The estimate of the probability $P(X>4)$ is r monte_carlo_test[1]. The confidence interval for $\theta$ is [r lowermc, r uppermc]. 
 
 ## Question 2
 We want to use importance sampling to estimate $P(X>4)$. To determine the normalizing constant $c$, we use that the density $g(x)$ must integrate to 1, and we get that $c = e^8$. To estimate $P(X>4)$ by importance sampling, we can estimate $\int f(x)h(x)dx$ with $\frac{1}{N}\sum_{i=1}^N\frac{f(x_i)h(x_i)}{g(x_i)}$, where $x_i$ are sampled from the distribution $g(x)$, and in our case this is done by inversion sampling. 
@@ -403,9 +403,7 @@ importance_test <- importance_sampling(n)
 lowerim <- importance_test[1] + qnorm(0.025)*sqrt(importance_test[2])
 upperim <- importance_test[1] + qnorm(0.975)*sqrt(importance_test[2])
 ```
-<!--
-The estimate of $P(X>4)$ with importance sampling is `r importance_test[1]`. The confidence interval for $\theta$ with importance sampling is [`r lowerim`, `r upperim`]. Compared to the confidence interval for Monte Carlo integration [`r lowermc`, `r uppermc`], we see that the confidence interval from importance sampling is smaller, and therefore we prefer importance sampling over Monte Carlo integration for this problem. 
--->
+The estimate of $P(X>4)$ with importance sampling is r importance_test[1]. The confidence interval for $\theta$ with importance sampling is [r lowerim, r upperim]. Compared to the confidence interval for Monte Carlo integration [r lowermc, r uppermc], we see that the confidence interval from importance sampling is smaller, and therefore we prefer importance sampling over Monte Carlo integration for this problem. 
 
 We want to find how many samples we need to get the same precision for Monte Carlo integration as with importance sampling. We test with some values of $n$.
 ```{r}
@@ -463,3 +461,63 @@ loweranti <- antithetic_test[1] + qnorm(0.025)*sqrt(antithetic_test[2])
 upperanti <- antithetic_test[1] + qnorm(0.975)*sqrt(antithetic_test[2])
 ```
 The estimate of the probability $P(X>4)$ with antithetic variables is r antithetic_test[1]. The confidence interv al is r loweranti, r upperanti. We see that as expected, the precision of the antithetic variables and the importance sampling is similar. We must use a value of $n$ that is half as big for antithetic variables as for importance sampling because antithetic variables produces pairs of variables, and therefore the total amount of simulated samples will be the same in the end. 
+
+
+
+## Problem D
+Question D 1 
+We want to sample from 
+$$
+f(\theta|\mathbf{y})\propto(2+\theta)^{y_1}(1-\theta)^{y_2+y_3}\theta^{y_4}
+$$
+by using rejection sampling and using $g(\theta) = U(0,1)$ as the proposal density. We use the maximum of $f$ as the constant $c$ in rejection sampling, to ensure $\frac{f(\theta|y)}{g(\theta)} \leq c$. 
+
+```{r}
+# f is the  posterior function to sample from, not normalized
+# theta: parameter between 0 and 1, sampled from U(0,1)
+# y: observed values
+f <- function(theta, y) {
+  return((2+theta)^y[1]*(1-theta)^(y[2]+y[3])*theta^y[4])
+}
+# f_normalized is the posterior function, normalized
+f_normalized <- function(theta, y) {
+  c = integrate(f,0,1,y)$value
+  return(f(theta,y)/c)
+}
+# alpha finds the acceptance probability alpha
+alpha <- function(theta, y) {
+  c = optimize(f, interval = c(0,1), maximum = TRUE, y=y)$objective
+  return(f(theta, y)/c)
+}
+# rejection_d samples from the posterior by rejection sampling
+# n: number of samples to generate
+rejection_d <- function(y, n) {
+  out = 1:n
+  g = function() {return(runif(1))}
+  
+  for (i in 1:n) {
+    finished = 0
+    while(finished==0) {
+      u = runif(1)
+      theta = g()
+      alpha = alpha(theta, y)
+      if(u <= alpha) {
+        out[i] = theta
+        finished = 1
+      }
+    }
+  }
+  return(out)
+}
+y = c(125,18,20,34)
+n = 10000
+library(ggplot2)
+samples_d1 <- rejection_d(y, n)
+x <- seq(0,1,0.001)
+data_d1 <- data.frame("samples_d1"=samples_d1)
+ggplot(data=data_d1, aes(data_d1$samples_d1)) +
+geom_histogram(aes(y=..density..), breaks = seq(0, 1, by = 0.005)) +theme(plot.title = element_text(hjust = 0.5))+
+xlim(c(0.4,0.85)) + labs(title="Posterior density", x="x", y="Density") +
+stat_function(fun = f_normalized, args = list(y), color = "red")
+```
+From the plot we see that the theoretical and the simulated distribution follow each other. 
