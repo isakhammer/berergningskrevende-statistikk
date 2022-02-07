@@ -63,3 +63,83 @@ xlim(c(0.4,0.85)) + labs(title="Posterior density", x="x", y="Density") +
 stat_function(fun = f_normalized, args = list(y), color = "red")
 ```
 From the plot we see that the theoretical and the simulated distribution follow each other. 
+
+We then use Monte Carlo integration with $M = 10000$ samples to estimate the posterior mean of $\theta$, that is, the integral $\int\theta f(\theta|y)d\theta$ approximated by $\frac{1}{N}\sum_{i=1}^N\theta_i$. 
+
+```{r}
+M = 10000
+# 
+# post_mean_mc: the estimated posterior mean
+thetas <- rejection_d(y, M)
+post_mean_mc <- mean(thetas)
+
+# inside_integral is what we want to integrate
+inside_integral = function(theta,y) {
+    return(theta*f_normalized(theta,y))
+}
+
+# numerical_mean is the mean found by numerical integration
+numerical_mean <- integrate(inside_integral,0,1,y)[[1]]
+```
+The estimate of the mean of $\theta$ found by Monte Carlo integration is `r post_mean_mc`. The estimate of the mean found by numerical integration is `r numerical_mean`. The two values are very similar. We plot the distribution of the simulated values of $\theta$ together with the theoretical distribution and the Monte Carlo estimate.
+
+```{r}
+x <- seq(0,1,0.001)
+data_d1 <- data.frame("thetas"=thetas)
+ggplot(data=data_d1, aes(data_d1$thetas)) +
+geom_histogram(aes(y=..density..), breaks = seq(0, 1, by = 0.005)) +theme(plot.title = element_text(hjust = 0.5))+
+xlim(c(0.4,0.85)) + labs(title="Posterior density with posterior mean", x="x", y="Density") +
+stat_function(fun = f_normalized, args = list(y), color = "red")+geom_vline(xintercept = post_mean_mc,color="red")
+```
+
+Question D 3
+The overall acceptance probability is 
+$$
+P(U\leq\frac{f(x)}{cg(x)}) = \int_{-\infty}^{\infty}\frac{f(x)}{cg(x)}g(x)dx = \int_{-\infty}^{\infty}\frac{f(x)}{c}dx = \frac{1}{c}
+$$
+which implies that the number of trials to simulate one sample is $c$.
+
+We want to count how many trials we need to simulate one sample, and we check it with the theoretical value of c. We just copy the algorithm from before and add a counter. 
+
+```{r}
+# rejection_d_count samples from the posterior by rejection sampling and counts the number of trials to one acceptance
+# n: number of samples to generate
+rejection_d_count <- function(y, n) {
+  out = 1:n
+  g = function() {return(runif(1))}
+  
+  for (i in 1:n) {
+    finished = 0
+    count = 0
+    while(finished==0) {
+      u = runif(1)
+      theta = g()
+      alpha = alpha(theta, y)
+      count = count + 1
+      if(u <= alpha) {
+        out[i] = count
+        count = 0
+        finished = 1
+      }
+    }
+  }
+  return(out)
+}
+
+y = c(125,18,20,34)
+n = 10000
+
+# simulated number of trials 
+number_of_trials <- mean(rejection_d_count(y,n))
+
+#c_const finds the constant c, i.e. the numerical computation of the theoretical number of trials for one acceptance
+c_const <- function(y) {
+  c = optimize(f_normalized, interval = c(0,1), maximum = TRUE, y=y)$objective
+  return(c)
+}
+
+c_numerical <- c_const(y)
+```
+The number of trials in the simulation until one acceptance is `r number_of_trials`, and the numerical calcualtion of the theoretical number of trials is `r c_numerical`.
+
+D
