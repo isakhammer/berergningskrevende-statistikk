@@ -32,7 +32,7 @@ To generate $n$ independent samples from $f$ by rejection sampling, we need to f
 # f_b1 returns the value of f in this exercise, a gamma distribution
 f_b1 <- function(alpha, x) {
   gamma = (1/gamma(alpha))*x^(alpha-1)*exp(-x)
-  return(gamma)*(x>0)
+  return((gamma)*(x>0))
 }
 
 # Delete this before the files are merges, only for help 
@@ -46,6 +46,11 @@ dist1 <- function(alpha, n) {
    res[L] = (u[L]*alpha/ca(alpha))^(1/alpha)
    res[!L] = -log((1-u[!L])/ca(alpha))
    return(list(res,u))
+}
+
+# ca: normalizing constant
+ca <- function(alpha) {
+  return(exp(1)*alpha/(exp(1)+alpha))
 }
 
 # g_test is the theoretical function to test the algorithm with 
@@ -74,10 +79,11 @@ rejection_b <- function(alpha, n) {
     finished = 0
     while(finished==0) {
       u = runif(1)
-      x = dist1(alpha, 1)
+      x = dist1(alpha, 1)[[1]]
       acceptance = acceptance_criterion(alpha, x)
-      if(u <= alpha) {
+      if(u <= acceptance) {
         out[i] = x
+        print(x)
         finished = 1
       }
     }
@@ -85,8 +91,8 @@ rejection_b <- function(alpha, n) {
   return(out)
 }
 
-n = 10000
-alpha = 0.5
+n = 10
+alpha = 0.7
 
 library(ggplot2)
 samples_b1 <- rejection_b(alpha, n)
