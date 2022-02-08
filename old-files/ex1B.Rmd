@@ -27,12 +27,77 @@ $$
 So we choose $c = \frac{1}{\Gamma(\alpha)}\frac{e+\alpha}{e\alpha}$ to satisfy our initial inequality. The acceptance probability is then $\frac{1}{c} = \frac{\Gamma(\alpha)e\alpha}{e+\alpha}$.
 
 ## Task B1b
-We will now demonstrate how to generate $n$ samples of $f$
+To generate $n$ independent samples from $f$ by rejection sampling, we need to find the expression $\alpha = \frac{1}{c}\frac{f(x)}{g(x)}$, with the proposal $g$ from problem A2 and $f$ as given in the exercise. We therefore use $c$ as found in the previous exercise and we sample from $g$ as in problem A2. 
 ```{r}
-#TODO: Generate n independent samples from f
+# f_b1 returns the value of f in this exercise, a gamma distribution
+f_b1 <- function(alpha, x) {
+  gamma = (1/gamma(alpha))*x^(alpha-1)*exp(-x)
+  return(gamma)*(x>0)
+}
+
+# Delete this before the files are merges, only for help 
+# alpha: parameter alpha
+# n: number of samples to generate
+# dist1 returns a vector of random numbers from the distribution g
+dist1 <- function(alpha, n) {
+   u <- runif(n)
+   L = u<ca(alpha)/alpha
+   res = c(1:n)*0
+   res[L] = (u[L]*alpha/ca(alpha))^(1/alpha)
+   res[!L] = -log((1-u[!L])/ca(alpha))
+   return(list(res,u))
+}
+
+# g_test is the theoretical function to test the algorithm with 
+g_test = function(alpha, x) {
+  res = c(1:length(x))*0
+  L = x<1&x>0
+  res[L] = ca(alpha)*x[L]^(alpha-1)
+  res[!L] = ca(alpha)*exp(-x[!L])
+  return (res)
+}
+
+# acceptance_criterion returns the alpha to accept/reject in rejection sampling
+acceptance_criterion <- function(alpha, x) {
+  const = (exp(1)+alpha)/(gamma(alpha)*exp(1)*alpha)
+  alpha = f_b1(alpha, x)/(const*g_test(alpha, x))
+  return(alpha)
+}
+
+# rejection_b generates samples from f by rejection sampling
+# n: number of samples to generate
+# alpha: shape parameter 
+rejection_b <- function(alpha, n) {
+  out = 1:n
+  
+  for (i in 1:n) {
+    finished = 0
+    while(finished==0) {
+      u = runif(1)
+      x = dist1(alpha, 1)
+      acceptance = acceptance_criterion(alpha, x)
+      if(u <= alpha) {
+        out[i] = x
+        finished = 1
+      }
+    }
+  }
+  return(out)
+}
+
+n = 10000
+alpha = 0.5
+
+library(ggplot2)
+samples_b1 <- rejection_b(alpha, n)
+x <- seq(0,1,0.001)
+data_b1 <- data.frame("samples_b1"=samples_b1)
+ggplot(data=data_b1, aes(data_b1$samples_b1)) +
+geom_histogram(aes(y=..density..), breaks = seq(0, 1, by = 0.005)) +theme(plot.title = element_text(hjust = 0.5))+
+xlim(c(0,4)) + labs(title="Samples from gamma distribution", x="x", y="Density") +
+stat_function(fun = g_test, args = list(shape = alpha), color = "red")
+
 ```
-
-
 
 # Task B2
 ## Task B2a
