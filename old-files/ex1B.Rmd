@@ -8,16 +8,23 @@ output: html_notebook
 
 The acceptance probability has the form
 $$
-\begin{align}
-P(U \le  \frac{f(y)}{cg(y)}) &=  \int_{-\infty}^{\infty} \int_0^{\frac{f(y)}{cg(y)}}  f_{U,Y} (y,u) du dy \\
-&=  \int_{-\infty}^{\infty} \int_0^{\frac{f(y)}{cg(y)}} 1\cdot g(y)   du dy \\
-&=  1/c
-\end{align}
+P(U\leq\frac{f(x)}{cg(x)}) = \int_{-\infty}^{\infty}\frac{f(x)}{cg(x)}g(x)dx = \int_{-\infty}^{\infty}\frac{f(x)}{c}dx = \frac{1}{c}
 $$
 
-We know from task 1 that the $g(y)$ has the form 
-# Task B1a
+where $c$ is such that $\frac{f(x)}{g(x)}\leq c$. To find $c$, consider the expression $f(x)\leq cg(x)$. Then we get (for the nontrivial cases when $x>0$)
 
+$$
+\frac{1}{\Gamma(\alpha)}x^{\alpha-1}e^{-x}\leq \begin{cases}
+c\frac{e\alpha}{e+\alpha}x^{\alpha-1}, 0 < x < 1\\
+c\frac{e\alpha}{e+\alpha}e^{-x}, x \geq 1\\
+\end{cases}
+$$
+Rearranging the inequalities and using that $e^{-x}$ and $x^{\alpha-1}$ are decreasing functions, we get the following upper bound for $c$:
+
+$$
+c\geq\frac{1}{\Gamma(\alpha)}\frac{e+\alpha}{e\alpha}
+$$
+So we choose $c = \frac{1}{\Gamma(\alpha)}\frac{e+\alpha}{e\alpha}$ to satisfy our initial inequality. The acceptance probability is then $\frac{1}{c} = \frac{\Gamma(\alpha)e\alpha}{e+\alpha}$.
 
 ## Task B1b
 We will now demonstrate how to generate $n$ samples of $f$
