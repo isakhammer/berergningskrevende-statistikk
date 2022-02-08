@@ -74,7 +74,6 @@ rejection_b <- function(alpha, n) {
       acceptance = acceptance_criterion(alpha, x)
       if(u <= acceptance) {
         out[i] = x
-        print(x)
         finished = 1
       }
     }
@@ -83,13 +82,10 @@ rejection_b <- function(alpha, n) {
 }
 
 
-# g_testb is the theoretical function to test the algorithm with 
-g_testb = function(x, alpha) {
-  res = c(1:length(x))*0
-  L = x<1&x>0
-  res[L] = ca(alpha)*x[L]^(alpha-1)
-  res[!L] = ca(alpha)*exp(-x[!L])
-  return (res)
+# f_testb is the theoretical function to test the algorithm with 
+f_testb = function(x, alpha) {
+  gamma = (1/gamma(alpha))*x^(alpha-1)*exp(-x)
+  return((gamma)*(x>0))
 }
 
 n = 10000
@@ -101,8 +97,8 @@ x <- seq(0,4,0.001)
 data_b1 <- data.frame("samples_b1"=samples_b1)
 ggplot(data=data_b1, aes(data_b1$samples_b1)) +
 geom_histogram(aes(y=..density..), breaks = seq(0, 4, by = 0.1)) +theme(plot.title = element_text(hjust = 0.5))+
-xlim(c(0,4)) + labs(title="Samples from gamma distribution", x="x", y="Density") #+
-#stat_function(fun = g_testb, args = alpha, color = "red")
+xlim(c(0,4)) + labs(title="Samples from gamma distribution", x="x", y="Density") +
+stat_function(fun = f_testb, args = list(alpha), color = "red")
 
 ```
 
