@@ -53,15 +53,6 @@ ca <- function(alpha) {
   return(exp(1)*alpha/(exp(1)+alpha))
 }
 
-# g_test is the theoretical function to test the algorithm with 
-g_test = function(alpha, x) {
-  res = c(1:length(x))*0
-  L = x<1&x>0
-  res[L] = ca(alpha)*x[L]^(alpha-1)
-  res[!L] = ca(alpha)*exp(-x[!L])
-  return (res)
-}
-
 # acceptance_criterion returns the alpha to accept/reject in rejection sampling
 acceptance_criterion <- function(alpha, x) {
   const = (exp(1)+alpha)/(gamma(alpha)*exp(1)*alpha)
@@ -91,17 +82,27 @@ rejection_b <- function(alpha, n) {
   return(out)
 }
 
-n = 10
-alpha = 0.7
+
+# g_testb is the theoretical function to test the algorithm with 
+g_testb = function(x, alpha) {
+  res = c(1:length(x))*0
+  L = x<1&x>0
+  res[L] = ca(alpha)*x[L]^(alpha-1)
+  res[!L] = ca(alpha)*exp(-x[!L])
+  return (res)
+}
+
+n = 10000
+alpha = 0.5
 
 library(ggplot2)
 samples_b1 <- rejection_b(alpha, n)
-x <- seq(0,1,0.001)
+x <- seq(0,4,0.001)
 data_b1 <- data.frame("samples_b1"=samples_b1)
 ggplot(data=data_b1, aes(data_b1$samples_b1)) +
-geom_histogram(aes(y=..density..), breaks = seq(0, 1, by = 0.005)) +theme(plot.title = element_text(hjust = 0.5))+
-xlim(c(0,4)) + labs(title="Samples from gamma distribution", x="x", y="Density") +
-stat_function(fun = g_test, args = list(shape = alpha), color = "red")
+geom_histogram(aes(y=..density..), breaks = seq(0, 4, by = 0.1)) +theme(plot.title = element_text(hjust = 0.5))+
+xlim(c(0,4)) + labs(title="Samples from gamma distribution", x="x", y="Density") #+
+#stat_function(fun = g_testb, args = alpha, color = "red")
 
 ```
 
