@@ -35,6 +35,7 @@ ggplot(data.frame(x=x))+geom_histogram(aes(x=x, y = ..density..), bins = 50)+geo
 From the plot one can see that the exponential distribtion that we generated and the exponential distribution in R closely follow each other, which means that our implementation is correct.
 
 
+
 ## Question 2 a
 
 Let us consider a new example where the PDF has the form
@@ -107,7 +108,8 @@ g_test = function(alpha, x) {
   res = c(1:length(x))*0
   L = x<1&x>0
   res[L] = ca(alpha)*x[L]^(alpha-1)
-  res[!L] = ca(alpha)*exp(-x[!L])
+
+    res[!L] = ca(alpha)*exp(-x[!L])
   return (res)
 }
 
@@ -245,9 +247,70 @@ We know from task 1 that the $g(y)$ has the form
 
 ## Question 1b
 We will now demonstrate how to generate $n$ samples of $f$
+
 ```{r}
-#TODO: Generate n independent samples from f
+n <- 100
+
+f_gamma <- function(x, alpha){
+  return (x^(alpha - 1.0 )*exp(-x))
+}
+a = 1
+b = 0
+x <- list()
+alpha <- 1
+for (i in 1:100){
+  x1 = a*runif(1)
+  x2 = b*runif(1)
+  if (0 <= x1 && x1 <= f_gamma(x1/x2, alpha=1.0)^(0.5))  { 
+    x=append(x, x1/x2)
+  }
+} 
+print(x)
+x <- as.numeric(unlist(x))
+print(x)
+f_gamma(x, alpha=1.0)
 ```
+
+
+```{r, fig.cap="Plot from the gamma distribution for large value of alpha=100.7, with a histogram of our samples and a theoretical curve."}
+#Function that samples from the gamma distribution 
+gammaB2 <- function(alpha, n){
+  #Defining a and b+ on log scale
+  loga <- 1/2*((alpha-1)*log(alpha-1)+(1-alpha))
+  logb <- 1/2*((alpha+1)*log(alpha+1)-1-alpha)
+  
+  accept=c()#vector of accepted values
+  tries=1
+  count = 1
+  while(length(accept)<n){
+    #Converting to uniform distribution with correct limits
+    logx1 <- loga + log(runif(1))
+    logx2 <- logb + log(runif(1))
+    #Proposal sample from the gamma distribution
+    y<-exp(logx2-logx1)
+    a <- (alpha-1)*(logx2-logx1)-exp(logx2-logx1)#acceptance criteria
+    if(2*logx1<=a){
+
+            accept[count]<-y
+      count = count +1
+    }
+    tries=tries+1
+  }
+  return(cbind(accept,tries-1))
+}
+
+#Function that tests the implementation
+testB2 = function(alpha, n) {
+  samples = gammaB2(alpha, n)[,1]
+  hist(samples, breaks = 40, freq = FALSE, main = bquote("Histogram of samples when "~alpha == .(alpha)))
+  curve(dgamma(x, alpha, 1), col = "red", lwd = 2, add=TRUE)
+  return(samples)
+}
+
+alpha = 100.7
+s = testB2(alpha, 10000)
+```
+
 
 
 ## Question 2a
