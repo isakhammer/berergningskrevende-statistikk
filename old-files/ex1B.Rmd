@@ -211,4 +211,16 @@ curve(theoretical_gamma(x, alpha, beta), col = "red", lwd = 2, add=TRUE)
 
 ```
 
+# Task B4 a
+We want to show that if $x \sim $Gamma($\alpha, 1$) and $y \sim $Gamma($\beta, 1)$ are independent, then $z = \frac{x}{x+y}$ is Beta($\alpha, \beta$) distributed. Define $v = x + y$, such that $x = zv$ and $y = v(1-z)$. Then the jacobian of the transformation is $v$, so by using the transformation of variables formula, the joint distribution of $z$ and $v$ becomes 
 
+$$
+f_{zv}(z,v) = \frac{v}{\Gamma(\alpha)\Gamma(\beta)}(vz)^{\alpha-1}(v(1-z))^{\beta-1}e^{-v}
+$$
+
+which can be written as 
+
+$$
+\frac{v^{\alpha+\beta-1}}{\Gamma(\alpha)\Gamma(\beta)}z^{\alpha-1}(1-z)^{\beta-1}e^{-v}
+$$
+and we see that this is just a gamma distribution and a beta distribution multiplied, so $v \sim $Gamma($\alpha+\beta, 1$) and $z \sim $Beta($\alpha, \beta$). 
