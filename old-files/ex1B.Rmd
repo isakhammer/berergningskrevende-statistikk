@@ -224,3 +224,25 @@ $$
 \frac{v^{\alpha+\beta-1}}{\Gamma(\alpha)\Gamma(\beta)}z^{\alpha-1}(1-z)^{\beta-1}e^{-v}
 $$
 and we see that this is just a gamma distribution and a beta distribution multiplied, so $v \sim $Gamma($\alpha+\beta, 1$) and $z \sim $Beta($\alpha, \beta$). 
+
+# Task B4 b
+To sample from a Beta($\alpha, beta$) distribution, we use the result above. 
+
+```{r}
+# sample_beta samples from beta(alpha, beta) distribution 
+# n: number of samples
+sample_beta <- function(alpha, beta, n) {
+  x = gammaab(alpha, 1, n)
+  y = gammaab(beta, 1, n)
+  z = x/(x+y)
+  return(z)
+}
+
+alpha = 0.5
+beta = 0.5
+n = 10000
+samples_beta <- sample_beta(alpha, beta, n)
+hist(samples_beta, breaks = 40, freq = FALSE, main = bquote("Histogram of samples from beta when "~alpha == .(alpha) ~beta ==.(beta)))
+curve(dbeta(x, alpha, beta), col = "red", lwd = 2, add=TRUE)
+
+```
