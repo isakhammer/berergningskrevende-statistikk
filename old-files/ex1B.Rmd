@@ -171,6 +171,7 @@ xlim(c(0,7)) + labs(title="Samples from gamma distribution", x="x", y="Density")
 stat_function(fun = f_testb, args = list(alpha), color = "red")
 
 
+```
 
 # Task B3
 We want to generate $n$ samples of the gamma distribution
