@@ -170,6 +170,21 @@ geom_histogram(aes(y=..density..), breaks = seq(0, 7, by = 0.1)) +theme(plot.tit
 xlim(c(0,7)) + labs(title="Samples from gamma distribution", x="x", y="Density") +
 stat_function(fun = f_testb, args = list(alpha), color = "red")
 
+test_tries <- function(n) {
+  alpha = seq(2,2000,10)
+  tryvector = 1:length(alpha)
+  for (i in 1:length(alpha)) {
+    tries = gamma_b2b2(alpha[i], n)[,2][1]
+    print(tries)
+    tryvector[i] = tries
+  }
+  return(cbind(alpha, tryvector))
+  
+}
+
+test_try = test_tries(1000)
+
+plot(test_try[,1], test_try[,2])
 
 ```
 
