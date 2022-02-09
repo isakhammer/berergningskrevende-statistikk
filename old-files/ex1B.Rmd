@@ -136,7 +136,7 @@ f_gamma <- function(x, alpha){
   return (x^(alpha - 1 )*exp(-x)*(x>0))
 }
 
-alpha <- 2
+alpha <- 400
 
 # gamma_b2b2 samples from gamma distribution with large alpha
 gamma_b2b2 <- function(alpha, n){
@@ -148,11 +148,11 @@ gamma_b2b2 <- function(alpha, n){
   for (i in 1:n){
     logx1 = loga + log(runif(1))
     logx2 = logb + log(runif(1))
-    f_condition = 0.5*log(f_gamma(exp(logx2-logx1), alpha))
-    while(0 > logx1 && logx1 > f_condition){
+    f_condition = 0.5*((alpha-1)*(logx2-logx1)-exp(logx2-logx1))
+    while(logx1 > f_condition){
     logx1 = loga + log(runif(1))
     logx2 = logb + log(runif(1))
-    f_condition = 0.5*log(f_gamma(exp(logx2-logx1), alpha))
+    f_condition = 0.5*((alpha-1)*(logx2-logx1)-exp(logx2-logx1))
     trials = trials + 1
     }
     
@@ -163,11 +163,11 @@ gamma_b2b2 <- function(alpha, n){
 
 library(ggplot2)
 samples_b2b <- gamma_b2b2(alpha, n)[,1]
-x <- seq(0,7,0.001)
+x <- seq(0,1000,0.001)
 data_b2b <- data.frame("samples_b2b"=samples_b2b)
 ggplot(data=data_b2b, aes(data_b2b$samples_b2b)) +
-geom_histogram(aes(y=..density..), breaks = seq(0, 7, by = 0.1)) +theme(plot.title = element_text(hjust = 0.5))+
-xlim(c(0,7)) + labs(title="Samples from gamma distribution", x="x", y="Density") +
+geom_histogram(aes(y=..density..), breaks = seq(0, 1000, by = 10)) +theme(plot.title = element_text(hjust = 0.5))+
+xlim(c(0,1000)) + labs(title="Samples from gamma distribution", x="x", y="Density") +
 stat_function(fun = f_testb, args = list(alpha), color = "red")
 
 test_tries <- function(n) {
