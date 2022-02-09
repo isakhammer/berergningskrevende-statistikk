@@ -129,24 +129,40 @@ The supremum for $a_{-}$ and $b_{+}$ can easily be derived by finding extremal p
 
 ## Task B2b
 
-We now want to generate $n$ samples of $f$ for different values of $alpha$ 
-
-However, the explicit function will quickly become very large for big $\alpha$. To handle this will we introduce the substitution $x = ln(y) = g(y)$ such that $g^{-1} (x) = e^x,  g^{-1}`(x) = e^x $. Hence, using the change of variable function, we get
-
-$$
-\begin{align}
-f_Y (y) &= f_X(g^{-1}(x))\cdot \left| \frac{d g^{-1}(x)} {dx} \right| \\
-  &= f_X(e^x) \cdot  e^x  \quad \text{completely wrong}
-\end{align}
-$$
+# Task B2b
 
 ```{r}
-# TODO: Write an R function that generates a vector of n independent samples from f. Use the function
-# to check how many tries the algorithm needs to generate n = 1000 realisations depending on
-# the value of α ∈ (1, 2000]. Generate a plot with values of α on the x-axis and the number of
-# tries used on the y-axis. Interpret the result.
-# Caution: You need to implement the algorithm on log-scale, otherwise you will get NAs already
-# for α around 30.
+n <- 10000
+f_gamma <- function(x, alpha){
+  return (x^(alpha - 1 )*exp(-x)*(x>0))
+}
+
+alpha <- 2
+
+gamma_b2b <- function(alpha, n){
+  x <- 1:n
+  a <- ((alpha-1)/exp(1))^((alpha-1)/2)
+  b <- ((alpha+1)/exp(1))^((alpha+1)/2)
+  for (i in 1:n){
+    x1 = a*runif(1)
+    x2 = b*runif(1)
+    f_condition = f_gamma(x2/x1, alpha)^0.5
+    if (0 <= x1 && x1 <= f_condition)  { 
+      x[i] = x2/x1
+  }
+  } 
+  return(x)
+}
+
+library(ggplot2)
+samples_b2b <- gamma_b2b(alpha, n)
+x <- seq(0,4,0.001)
+data_b2b <- data.frame("samples_b2b"=samples_b2b)
+ggplot(data=data_b2b, aes(data_b2b$samples_b2b)) +
+geom_histogram(aes(y=..density..), breaks = seq(0, 4, by = 0.05)) +theme(plot.title = element_text(hjust = 0.5))+
+xlim(c(0,4)) + labs(title="Samples from gamma distribution", x="x", y="Density") +
+stat_function(fun = f_testb, args = list(alpha), color = "red")
+
 ```
 
 
