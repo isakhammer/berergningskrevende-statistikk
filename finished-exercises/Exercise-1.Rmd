@@ -59,8 +59,7 @@ From the plot one can see that the exponential distribtion that we generated and
 
 
 # Problem B
-## Question 1
-
+## Question B1
 The acceptance probability has the form
 $$
 P(U\leq\frac{f(x)}{cg(x)}) = \int_{-\infty}^{\infty}\frac{f(x)}{cg(x)}g(x)dx = \int_{-\infty}^{\infty}\frac{f(x)}{c}dx = \frac{1}{c}
@@ -88,33 +87,6 @@ To generate $n$ independent samples from $f$ by rejection sampling, we need to f
 f_b1 <- function(alpha, x) {
   gamma = (1/gamma(alpha))*x^(alpha-1)*exp(-x)
   return((gamma)*(x>0))
-}
-
-# Delete this before the files are merges, only for help 
-# alpha: parameter alpha
-# n: number of samples to generate
-# dist1 returns a vector of random numbers from the distribution g
-dist1 <- function(alpha, n) {
-   u <- runif(n)
-   L = u<ca(alpha)/alpha
-   res = c(1:n)*0
-   res[L] = (u[L]*alpha/ca(alpha))^(1/alpha)
-   res[!L] = -log((1-u[!L])/ca(alpha))
-   return(list(res,u))
-}
-
-# ca: normalizing constant
-ca <- function(alpha) {
-  return(exp(1)*alpha/(exp(1)+alpha))
-}
-
-# g_test is the theoretical function to test the algorithm with 
-g_test = function(alpha, x) {
-  res = c(1:length(x))*0
-  L = x<1&x>0
-  res[L] = ca(alpha)*x[L]^(alpha-1)
-  res[!L] = ca(alpha)*exp(-x[!L])
-  return (res)
 }
 
 # acceptance_criterion returns the alpha to accept/reject in rejection sampling
@@ -169,7 +141,7 @@ stat_function(fun = f_testb, args = list(alpha), color = "red")
 ```
             
 
-# Question B2b
+## Question B2b
 
 We can define the domain 
 $$
@@ -195,7 +167,6 @@ $$
 The supremum for $a$ and $b_{+}$ can easily be derived by finding extremal points of the function using differentiation and $b_{-}$ follows from $f(x) = 0$ for $x\le 0$.
 
 
-# Question B2
 ## Question B2a
 
 We can define the domain 
@@ -220,7 +191,7 @@ $$
 
 The supremum for $a$ and $b_{+}$ can easily be derived by finding extremal points of the function using differentiation and $b_{-}$ follows from $f(x) = 0$ for $x\le 0$.
 
-# Question B2b
+## Question B2b
 To sample from the gamma distribution for large values of $\alpha$, we use the ratio of uniforms method with the values of $a, b_{-}$ and $b_{+}$ as above. To avoid computational errors following large numbers, we use a log transform. To sample from the uniform distribution between 0 and $a_-$ and between 0 and $b_+$, we use that 
 
 $$
@@ -299,7 +270,7 @@ plot(test_try[,1], test_try[,2])
 From the plot we see that a larger value of $\alpha$ implies that we need more tries to accept one sample. This makes sense, as we are approaching a more extreme case when $\alpha$ becomes large. 
 
 
-# Question B3
+## Question B3
 We want to generate $n$ samples of the gamma distribution
 
 $$
@@ -360,7 +331,7 @@ curve(theoretical_gamma(x, alpha, beta), col = "red", lwd = 2, add=TRUE)
 
 ```
 
-# Question B4 a
+## Question B4a
 We want to show that if $x \sim  \text{Gamma}(\alpha, 1)$ and $y \sim \text{Gamma}(\beta, 1)$ are independent, then $z = \frac{x}{x+y}$ is $\text{Beta}(\alpha, \beta$) distributed. Define $v = x + y$ such that $x = zv$ and $y = v(1-z)$. Then the jacobian of the transformation is $v$, so by using the transformation of variables formula, the joint distribution of $z$ and $v$ becomes 
 
 $$
@@ -376,7 +347,7 @@ and we see that this is just a gamma distribution and a beta distribution multip
 
 ## Question 4b
 ### TODO
-To sample from a Beta($\alpha$, beta ) distribution, we use the result above. 
+To sample from a Beta($\alpha$, $\beta$ ) distribution, we use the result above. 
 
 ```{r}
 # sample_beta samples from beta(alpha, beta) distribution 
