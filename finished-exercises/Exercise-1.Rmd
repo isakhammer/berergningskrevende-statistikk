@@ -17,7 +17,7 @@ knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
 opts_chunk$set(tidy.opts=list(width.cutoff=60),tidy=TRUE)
 ```
 # Problem A
-## Question 1
+## Question A1
 We first want to write an R function that generates  samples from a exponential distribution with rate parameter $\lambda$. 
 We know that the cumulative exponential distrobution takes the form $$ F(x;\lambda) =  1 - \lambda e ^{-\lambda x},  \quad x \ge 0 
 $$
@@ -80,7 +80,7 @@ c\geq\frac{1}{\Gamma(\alpha)}\frac{e+\alpha}{e\alpha}
 $$
 So we choose $c = \frac{1}{\Gamma(\alpha)}\frac{e+\alpha}{e\alpha}$ to satisfy our initial inequality. The acceptance probability is then $\frac{1}{c} = \frac{\Gamma(\alpha)e\alpha}{e+\alpha}$.
 
-## Question 1b
+## Question B1b
 To generate $n$ independent samples from $f$ by rejection sampling, we need to find the expression $\alpha = \frac{1}{c}\frac{f(x)}{g(x)}$, with the proposal $g$ from problem A2 and $f$ as given in the exercise. We therefore use $c$ as found in the previous exercise and we sample from $g$ as in problem A2. 
 ```{r}
 # f_b1 returns the value of f in this exercise, a gamma distribution
@@ -345,8 +345,7 @@ $$
 $$
 and we see that this is just a gamma distribution and a beta distribution multiplied, so $v \sim \text{Gamma}(\alpha+\beta, 1)$ and $z \sim  \text{Beta} (\alpha, \beta)$. 
 
-## Question 4b
-### TODO
+## Question B4b
 To sample from a Beta($\alpha$, $\beta$ ) distribution, we use the result above. 
 
 ```{r}
@@ -368,4 +367,155 @@ curve(dbeta(x, alpha, beta), col = "red", lwd = 2, add=TRUE)
 
 ```
 
+# Problem C
+## Question C1
+```{r}
+# Delete this before the exercise is finished, only for help 
+mynormal <- function(n) {
+  u1=runif(n)
+  u2=runif(n)
+  return (sqrt(-2*log(u1))*sin(2*pi*u2))
+}
+```
 
+
+We want to estimate $P(X>4)$ by Monte Carlo integration, so we use that we can approximate the integral $\int h(x)f(x)dx$ with the sum $\frac{1}{N}\sum_{i=1}^Nh(x_i)$. Since we only want a part of the domain, we use the indicator function $I(x>4)$ as $h(x)$. We use the Box-Muller algorithm from before to draw samples from the normal distribution. 
+
+```{r}
+# indicator_func return
+indicator_func <- function(x) {
+  return (x>4)
+}
+
+# monte_carlo estimates the probability and the variance
+# n: number of samples to generate when estimating
+rm("c")
+monte_carlo <- function(n) {
+  normal = mynormal(n)
+  h = indicator_func(normal)
+  theta_estimate = (1/n)*sum(h)
+  variance_estimate = var(h)/(n-1)
+  return(c(theta_estimate, variance_estimate))
+}
+
+n = 100000
+
+monte_carlo_test <- monte_carlo(n)
+# lower: lower limit of confidence interval
+# upper: upper limit of confidence interval
+
+lowermc <- monte_carlo_test[1] + qnorm(0.025)*sqrt(monte_carlo_test[2])
+
+uppermc <- monte_carlo_test[1] + qnorm(0.975)*sqrt(monte_carlo_test[2])
+
+```
+The estimate of the probability $P(X>4)$ is `r monte_carlo_test[1]`. The confidence interval for $\theta$ is [`r lowermc`, `r uppermc`].
+
+Question C 2
+We want to use importance sampling to estimate $P(X>4)$. To determine the normalizing constant $c$, we use that the density $g(x)$ must integrate to 1, and we get that $c = e^8$. To estimate $P(X>4)$ by importance sampling, we can estimate $\int f(x)h(x)dx$ with $\frac{1}{N}\sum_{i=1}^N\frac{f(x_i)h(x_i)}{g(x_i)}$, where $x_i$ are sampled from the distribution $g(x)$, and in our case this is done by inversion sampling. 
+
+The function we want to sample from is 
+$$
+g(x)= \begin{cases} 
+      cxe^{-0.5x^2} &  x > 4 \\
+      0 & \text{otherwise }
+   \end{cases}
+$$
+By integrating from $t=4$ to an arbitrary $x$, we find that the cumulative distribution is 
+
+$$
+G(x) = 1-e^{8-0.5x^2}
+$$
+Solving this equation for $x$ we get
+
+$$
+G^{-1}(u) = \sqrt{16-2log(1-u)}
+$$
+```{r}
+# importance_sampling estimates the probability via the density g
+# n: number of samples to generate
+importance_sampling <- function(n) {
+  u = runif(n)
+  x = sqrt(16-2*log(1-u))
+  f = 1/sqrt(2*pi)*exp(-0.5*x^2)
+  g = x*exp(-0.5*x^2+8)
+  h = indicator_func(x)
+  theta_estimate = (1/n)*sum(h*f/g)
+  variance_estimate = (1/(n*(n-1)))*sum(h*f/g-theta_estimate)^2
+  return(c(theta_estimate, variance_estimate))
+}
+
+n = 10^5
+importance_test <- importance_sampling(n)
+
+# lower: lower limit of confidence interval
+# upper: upper limit of confidence interval
+lowerim <- importance_test[1] + qnorm(0.025)*sqrt(importance_test[2])
+upperim <- importance_test[1] + qnorm(0.975)*sqrt(importance_test[2])
+```
+The estimate of $P(X>4)$ with importance sampling is `r importance_test[1]`. The confidence interval for $\theta$ with importance sampling is [`r lowerim`, `r upperim`]. Compared to the confidence interval for Monte Carlo integration [`r lowermc`, `r uppermc`], we see that the confidence interval from importance sampling is smaller, and therefore we prefer importance sampling over Monte Carlo integration for this problem. 
+
+We want to find how many samples we need to get the same precision for Monte Carlo integration as with importance sampling. We test with some values of $n$.
+```{r}
+monte_carlo_test5 <- monte_carlo(10^5)
+monte_carlo_test6 <- monte_carlo(10^6)
+monte_carlo_test7 <- monte_carlo(10^7)
+
+lowermc5 <- monte_carlo_test5[1] + qnorm(0.025)*sqrt(monte_carlo_test5[2])
+
+uppermc5 <- monte_carlo_test5[1] + qnorm(0.975)*sqrt(monte_carlo_test5[2])
+
+lowermc6 <- monte_carlo_test6[1] + qnorm(0.025)*sqrt(monte_carlo_test6[2])
+
+uppermc6 <- monte_carlo_test6[1] + qnorm(0.975)*sqrt(monte_carlo_test6[2])
+
+lowermc7 <- monte_carlo_test7[1] + qnorm(0.025)*sqrt(monte_carlo_test7[2])
+
+uppermc7 <- monte_carlo_test5[1] + qnorm(0.975)*sqrt(monte_carlo_test7[2])
+```
+The confidence intervals for $n = 10^5, 10^6$ and $10^7$ with Monte Carlo integration are respectively: [`r lowermc5`, `r uppermc5`], [`r lowermc6`, `r uppermc6`], and [`r lowermc7`, `r uppermc7`]. We see that the confidence interval has a similar size for Monte Carlo integration as for importance sampling for $n = 10^6$, but with $n = 10^7$ the precision is even better. 
+
+Question C 3 a
+We want to produce $n$ pairs of antithetic variates from the specified distribution. The estimate is given by averaging the samples from importance sampling. The function below also estimates $\theta$ and the variance to be used in the confidence interval. 
+
+```{r}
+# antithet gives an estimate of the probability and the variance 
+# n: number of sample pairs to generate
+antithet <- function(n){
+  u = runif(n)
+  x1 = sqrt(16-2*log(u)) 
+  x2 = sqrt(16-2*log(1-u))
+  f1 = (1/sqrt(2*pi))*exp(-0.5*x1^2) 
+  f2 = (1/sqrt(2*pi))*exp(-0.5*x2^2)
+  g1 = x1*exp(-0.5*x1^2+8) 
+  g2 = x2*exp(-0.5*x2^2+8)
+  h1 = indicator_func(x1)
+  h2 = indicator_func(x2)
+  
+  theta_estimate1 = (1/n)*sum(h1*f1/g1)
+  theta_estimate2 = (1/n)*sum(h2*f2/g2)
+  theta_estimate = (theta_estimate1+theta_estimate2)/2
+  
+  variance_estimate1 = (1/(n-1))*sum(h1*f1/g1-theta_estimate1)^2
+  variance_estimate2 = (1/(n-1))*sum(h2*f2/g2-theta_estimate2)^2
+  cov = (1/(n-1))*sum(h1*f1/g1-theta_estimate1)*sum(h2*f2/g2-theta_estimate2)
+  variance_estimate = (1/(4*n))*(variance_estimate1+variance_estimate2+2*cov)
+  
+  return(c(theta_estimate, variance_estimate))
+}
+```
+
+Question 3 C b
+Now we use the function above to estimate the probability $\theta = P(X>4)$ and the variance of $\theta$. Because the function gives pairs of random variables, we will get a similar result if we use antithetic variables with $n = 5\cdot10^4$ as if we use importance sampling with $n = 10^5$ variables. 
+
+```{r}
+antithetic_test <- antithet(5*10^4)
+
+loweranti <- antithetic_test[1] + qnorm(0.025)*sqrt(antithetic_test[2])
+
+upperanti <- antithetic_test[1] + qnorm(0.975)*sqrt(antithetic_test[2])
+```
+The estimate of the probability $P(X>4)$ with antithetic variables is `r antithetic_test[1]`. The confidence interval is [`r loweranti`, `r upperanti`]. We see that as expected, the precision of the antithetic variables and the importance sampling is similar. We must use a value of $n$ that is half as big for antithetic variables as for importance sampling because antithetic variables produces pairs of variables, and therefore the total amount of simulated samples will be the same in the end. 
+
+
+# Problem C
