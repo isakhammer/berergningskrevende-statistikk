@@ -130,15 +130,36 @@ x^{\alpha -1}e^{-x}, \quad & x> 0 \\
 $$ We now want to define some upper and lower bounds such that 
 $$
 \begin{align}
-a_{-} &= \sqrt{{sup}_x f(x)  } = \sqrt{f(\alpha -1)} \\ 
+a &= \sqrt{{sup}_x f(x)  } = \sqrt{f(\alpha -1)} \\ 
 b_{+} &= \sqrt{{sup}_{x \ge 0} x^2 f(x)  } = \sqrt{(\alpha +1)^2 f(\alpha +1)}\\
 b_{-} &= \sqrt{{sup}_{x \le 0} x^2 f(x)  } = 0
 \end{align}
 $$
 
-The supremum for $a_{-}$ and $b_{+}$ can easily be derived by finding extremal points of the function using differentiation and $b_{-}$ follows from $f(x) = 0$ for $x\le 0$.
+The supremum for $a$ and $b_{+}$ can easily be derived by finding extremal points of the function using differentiation and $b_{-}$ follows from $f(x) = 0$ for $x\le 0$.
 
 # Task B2b
+To sample from the gamma distribution for large values of $\alpha$, we use the ratio of uniforms method with the values of $a, b_{-}$ and $b_{+}$ as above. To avoid computational errors following large numbers, we use a log transform. To sample from the uniform distribution between 0 and $a_-$ and between 0 and $b_+$, we use that 
+
+$$
+x_1 = a\cdot u_1\\
+x_2 = b_+\cdot u_2
+$$
+which is a transform from the standard uniform variables $u_1, u_2$ to a uniform distribution between 0 and some other limit. In the log scales, this becomes
+
+$$
+\log(x_1) = \log(a) + \log(u_1)\\
+\log(x_2) = \log(b_+) + \log(u_2)
+$$
+The acceptance criterion is then 
+
+$$
+x_1 \leq \sqrt{\frac{x_2^{\alpha-1}e^{-x_2}}{x_1^{\alpha-1}e^{-x_2}}}
+$$
+and on the log scale we get
+$$
+\log(x_1) \leq \frac{1}{2}(\alpha-1)(\log(x_2)-\log(x_1))-e^{\log(x_2)-log(x_1)}
+$$
 
 ```{r}
 n <- 10000
