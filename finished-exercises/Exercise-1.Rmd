@@ -3,13 +3,12 @@ title: "Exercise 1"
 author: "Ada and Isak "
 date: "2/10/2022"
 output: 
-   html_notebook
-  #pdf_document:
-  #  fig_caption: yes
+   html_notebook:
+      fig_caption: yes
 ---
 
 
-```{r setup, include=FALSE}
+```{r setup}
 ## Libraries used in Project
 library(ggplot2)
 library(knitr)
