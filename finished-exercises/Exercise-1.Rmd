@@ -1,6 +1,6 @@
 ---
 title: "Exercise 1"
-author: "Ada and Isak "
+author: "Ada Olsdatter Hagaseth and Isak Hammer "
 date: "2/10/2022"
 output: 
    html_notebook:
@@ -50,7 +50,9 @@ y = outval[[2]]
 ggplot(data.frame(x=x))+geom_histogram(aes(x=x, y = ..density..),
 bins = 50)  +geom_line(data = data.frame(x=x,y=dexp(x, rate = 1)),
 aes(x=x, y=y) ,
-color = "blue")+xlim(0,5)
+color = "blue")+xlim(0,5)+ labs(title = "Exponential Distribution")
+#color = "blue")+xlim(0,5)
+#plot(x, data)
 
 ```
 
