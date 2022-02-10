@@ -100,7 +100,6 @@ f_testb = function(x, alpha) {
 n = 10000
 alpha = 0.5
 
-library(ggplot2)
 samples_b1 <- rejection_b(alpha, n)
 x <- seq(0,4,0.001)
 data_b1 <- data.frame("samples_b1"=samples_b1)
