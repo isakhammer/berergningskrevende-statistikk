@@ -122,7 +122,7 @@ curve(g_test(alpha, x), col = "red", lwd = 2, add=TRUE)
 The normalizing constant is found by using that a PDF must integrate to 1, and therefore we get $c = \alpha$.
 
 ## Question A3b
-By integrating the PDF from $-\inf$ to x, we find the CDF: 
+By integrating the PDF from $-\infty$ to x, we find the CDF: 
 $$ 
 F(x) = \frac{-1}{1+e^{\alpha x}}+1
 $$
@@ -153,7 +153,7 @@ ggplot(data.frame(x = outval3[[1]], y = outval3[[2]]))+
   geom_histogram(aes(x=x, y=..density..),alpha=0.2)+geom_line(data = data.frame(x=x,y=checkfunc3(alpha,x)), aes(x=x, y=y), color = "blue")+labs(title="Probabiliy density function g(x)", x="x", y="Density",caption = "Theoretical and simulated values of our probability density function when alpha = 0.2.")
 
 ```
-From the plot we see that our simulation follows the theoretical values, although it could be better. 
+From the plot we see that our simulation follows the theoretical values. 
 
 ## Question A4
 We want to sample from the univariate normal distribution using the Box-Müller algorithm. We compare it to the normal distribution implemented in R. 
@@ -175,7 +175,7 @@ ggplot(std_normal_data)+
 ```
 
 ## Question A5
-We want to sample from a d-variate normal distribution with mean $\mu$ and covariance matrix $\Sigma$. We use the function mynormal with the Box-Muller algorithm to construct a vector with values of $\mu$ and a positive definite matrix $\Sigma = MM^T$, where $M$ is a d by d matrix from a normal distribution. As we don’t have given values of$\mu$ and $\Sigma$, we just choose a $\mu$ and $\Sigma$ such that $\Sigma$ is positive definite by the Cholesky factorization. Note that in the code, sigma = $\mu^T\mu$ because of how the Cholesky function is implemented in R. 
+We want to sample from a d-variate normal distribution with mean $\mu$ and covariance matrix $\Sigma$. We use the function mynormal with the Box-Muller algorithm to construct a vector with values of $\mu$ and a positive definite matrix $\Sigma = MM^T$, where $M$ is a d by d matrix from a normal distribution. As we don’t have given values of $\mu$ and $\Sigma$, we just choose a $\mu$ and $\Sigma$ such that $\Sigma$ is positive definite by the Cholesky factorization. Note that in the code, $\Sigma = M^TM$ because of how the Cholesky function is implemented in R. 
 
 ```{r}
 # mu: mean of the multivariate normal distribution
@@ -308,14 +308,19 @@ x^{\alpha -1}e^{-x}, \quad & x> 0 \\
 \end{cases}
 $$ We now want to define some upper and lower bounds such that
 $$
-a = \sqrt{{sup}_x f(x)  } = \sqrt{f(\alpha -1)} \\ 
-b_{+} = \sqrt{{sup}_{x \ge 0} x^2 f(x)  } = \sqrt{(\alpha +1)^2 f(\alpha +1)}\\
+a = \sqrt{{sup}_x f(x)  } = \sqrt{f(\alpha -1)} 
+$$
+$$
+b_{+} = \sqrt{{sup}_{x \ge 0} x^2 f(x)  } = \sqrt{(\alpha +1)^2
+f(\alpha +1)}
+$$
+$$
 b_{-} = \sqrt{{sup}_{x \le 0} x^2 f(x)  } = 0
 $$
 
 The supremum for $a$ and $b_{+}$ can easily be derived by finding extremal points of the function using differentiation and $b_{-}$ follows from $f(x) = 0$ for $x\le 0$.
 
-# Question B2b
+## Question B2b
 To sample from the gamma distribution for large values of $\alpha$, we use the ratio of uniforms method with the values of $a, b_{-}$ and $b_{+}$ as above. To avoid computational errors following large numbers, we use a log transform. To sample from the uniform distribution between 0 and $a_-$ and between 0 and $b_+$, we use that 
 
 $$
