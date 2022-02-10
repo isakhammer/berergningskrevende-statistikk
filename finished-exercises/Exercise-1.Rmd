@@ -1,19 +1,19 @@
 ---
 title: "Exercise 1"
-author: "Ada and Isak"
+author: "Ada and Isak "
 date: "2/10/2022"
 output: 
   pdf_document:
     fig_caption: yes
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
 
-## R Markdown
-```{r}
+```{r setup, include=FALSE}
+## Libraries used in Project
 library(ggplot2)
+library(knitr)
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+opts_chunk$set(tidy.opts=list(width.cutoff=60),tidy=TRUE)
 ```
 # Problem A
 ## Question 1
@@ -27,7 +27,9 @@ X = F^{-1}(u) = - ln (u)/\lambda, \quad 0 \leq u \leq 1
 $$
 
 We now want to show that this is true using simulation from the inverse cumulative distribution 
-```{r figs, echo=FALSE, fig.width=7,fig.height=6,fig.cap="plotting example"}
+
+```{r figs, echo=TRUE, fig.width=4,fig.height=3,fig.cap="Analytical and inverse sampled Exponential Distribution where lambda = 1, n=60000"}
+library(ggplot2)
 # n: number of samples to generate
 # rate: the rate
 # expdist returns a vector with generated random numbers from exponential distribution
@@ -44,7 +46,15 @@ lambda <- 1
 outval <- expdist(lambda, n)
 x = outval[[1]]
 y = outval[[2]]
-ggplot(data.frame(x=x))+geom_histogram(aes(x=x, y = ..density..), bins = 50)+geom_line(data = data.frame(x=x,y=dexp(x, rate = 1)), aes(x=x, y=y), color = "blue")+xlim(0,5)
+
+ggplot(data.frame(x=x))+geom_histogram(aes(x=x, y = ..density..),
+bins = 50)  +geom_line(data = data.frame(x=x,y=dexp(x, rate = 1)),
+aes(x=x, y=y) ,
+color = "blue")+xlim(0,5)
 
 ```
+
 From the plot one can see that the exponential distribtion that we generated and the exponential distribution in R closely follow each other, which means that our implementation is correct.
+
+
+
