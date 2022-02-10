@@ -84,6 +84,12 @@ So we choose $c = \frac{1}{\Gamma(\alpha)}\frac{e+\alpha}{e\alpha}$ to satisfy o
 ## Question B1b
 To generate $n$ independent samples from $f$ by rejection sampling, we need to find the expression $\alpha = \frac{1}{c}\frac{f(x)}{g(x)}$, with the proposal $g$ from problem A2 and $f$ as given in the exercise. We therefore use $c$ as found in the previous exercise and we sample from $g$ as in problem A2. 
 ```{r, echo=TRUE}
+mynormal <- function(n) {
+  u1=runif(n)
+  u2=runif(n)
+  return (sqrt(-2*log(u1))*sin(2*pi*u2))
+}
+
 # f_b1 returns the value of f in this exercise, a gamma distribution
 f_b1 <- function(alpha, x) {
   gamma = (1/gamma(alpha))*x^(alpha-1)*exp(-x)
@@ -380,6 +386,12 @@ We want to estimate $P(X>4)$ by Monte Carlo integration, so we use that we can a
 # indicator function for the domain when x > 4
 indicator_func <- function(x) {
   return (x>4)
+}
+
+mynormal <- function(n) {
+  u1=runif(n)
+  u2=runif(n)
+  return (sqrt(-2*log(u1))*sin(2*pi*u2))
 }
 
 # monte_carlo estimates the probability and the variance
