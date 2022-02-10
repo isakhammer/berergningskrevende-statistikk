@@ -265,10 +265,14 @@ test_tries <- function(n) {
 
 test_try = test_tries(1000)
 
-plot(test_try[,1], test_try[,2])
+plot(test_try[,1], test_try[,2], ylab="Number of tries", xlab="alpha",  main=("Number of Tries for one Sample") )
+
+
 
 ```
-From the plot we see that a larger value of $\alpha$ implies that we need more tries to accept one sample. This makes sense, as we are approaching a more extreme case when $\alpha$ becomes large. 
+
+
+From the plot we see that a larger value of $\alpha$ implies that we need more tries to accept one sample. This makes sense, as we are approaching a more extreme case when $\alpha$ gets large. 
 
 
 ## Question B3
@@ -286,7 +290,6 @@ $$
 which we recognize as the MGF of a Gamma($\alpha$, $\beta$) variable. When $\alpha = 1$, we recognize this as the MGF of an Exponential($\beta$) distribution, so therefore we can sample from the exponential distribution in this case. We use the rejection sampling algorithm for $\alpha \in (0,1)$ and the ratio of uniforms algorithm for $\alpha>1$. 
 
 ```{r}
-# Delete this before merging the files, only for help
 # n: number of samples to generate
 # rate: the rate
 # expdist returns a vector with generated random numbers from exponential distribution
@@ -370,20 +373,11 @@ curve(dbeta(x, alpha, beta), col = "red", lwd = 2, add=TRUE)
 
 # Problem C
 ## Question C1
-```{r}
-# Delete this before the exercise is finished, only for help 
-mynormal <- function(n) {
-  u1=runif(n)
-  u2=runif(n)
-  return (sqrt(-2*log(u1))*sin(2*pi*u2))
-}
-```
-
 
 We want to estimate $P(X>4)$ by Monte Carlo integration, so we use that we can approximate the integral $\int h(x)f(x)dx$ with the sum $\frac{1}{N}\sum_{i=1}^Nh(x_i)$. Since we only want a part of the domain, we use the indicator function $I(x>4)$ as $h(x)$. We use the Box-Muller algorithm from before to draw samples from the normal distribution. 
 
 ```{r}
-# indicator_func return
+# indicator function for the domain when x > 4
 indicator_func <- function(x) {
   return (x>4)
 }
