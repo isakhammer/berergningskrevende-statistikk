@@ -48,6 +48,15 @@ dist1 <- function(alpha, n) {
    return(list(res,u))
 }
 
+# g_test is the theoretical function to test the algorithm with 
+g_test = function(alpha, x) {
+  res = c(1:length(x))*0
+  L = x<1&x>0
+  res[L] = ca(alpha)*x[L]^(alpha-1)
+  res[!L] = ca(alpha)*exp(-x[!L])
+  return (res)
+}
+
 # ca: normalizing constant
 ca <- function(alpha) {
   return(exp(1)*alpha/(exp(1)+alpha))
