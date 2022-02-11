@@ -301,36 +301,49 @@ C_f = \Big \{ (x_1, x_2) : 0 \le x_1 \le \sqrt{f^{*}\Big(\frac{x_2}{x_1}\Big)}  
 $$
 where 
 $$
-f(x) =
+f^*(x) =
 \begin{cases}
 x^{\alpha -1}e^{-x}, \quad & x> 0 \\
 0, \quad & x\le 0 \\
 \end{cases}
 $$ We now want to define some upper and lower bounds such that
 $$
-a = \sqrt{{sup}_x f(x)  } = \sqrt{f(\alpha -1)} 
+a = \sqrt{{sup}_x f^*(x)  } = \sqrt{f^*(\alpha -1)} 
 $$
 $$
-b_{+} = \sqrt{{sup}_{x \ge 0} x^2 f(x)  } = \sqrt{(\alpha +1)^2
-f(\alpha +1)}
+b_{+} = \sqrt{{sup}_{x \ge 0} x^2 f^*(x)  } = \sqrt{(\alpha +1)^2
+f^*(\alpha +1)}
 $$
 $$
-b_{-} = \sqrt{{sup}_{x \le 0} x^2 f(x)  } = 0
+b_{-} = \sqrt{{sup}_{x \le 0} x^2 f^*(x)  } = 0
 $$
 
-The supremum for $a$ and $b_{+}$ can easily be derived by finding extremal points of the function using differentiation and $b_{-}$ follows from $f(x) = 0$ for $x\le 0$.
+The supremum for $a$ and $b_{+}$ can easily be derived by finding extremal points of the function using differentiation and $b_{-}$ follows from $f(x) = 0$ for $x\le 0$:
+
+$$
+\begin{aligned}
+\frac{d}{dx}f^*(x)=0 &&  \frac{d}{dx}x^2f^*(x)=0\\
+\frac{d}{dx}(x^{\alpha-1}e^{-x})=0 && \frac{d}{dx}(x^2x^{\alpha-1}e^{-x})=0 \\
+x=\alpha-1 && x=\alpha+1\\
+\end{aligned}
+$$
+and to obtain the above result, we just use these values of $x$ to find the supremum. 
 
 ## Question B2b
 To sample from the gamma distribution for large values of $\alpha$, we use the ratio of uniforms method with the values of $a, b_{-}$ and $b_{+}$ as above. To avoid computational errors following large numbers, we use a log transform. To sample from the uniform distribution between 0 and $a_-$ and between 0 and $b_+$, we use that 
 
 $$
-x_1 = a\cdot u_1\\
+x_1 = a\cdot u_1
+$$
+$$
 x_2 = b_+\cdot u_2
 $$
-which is a transform from the standard uniform variables $u_1, u_2$ to a uniform distribution between 0 and some other limit. In the log scales, this becomes
+which is a transform from the standard uniform variables $u_1, u_2$ to a uniform distribution between 0 and some other limit. In the log scale, this becomes
 
 $$
 \log(x_1) = \log(a) + \log(u_1)\\
+$$
+$$
 \log(x_2) = \log(b_+) + \log(u_2)
 $$
 The acceptance criterion is then 
@@ -415,16 +428,6 @@ $$
 which we recognize as the MGF of a Gamma($\alpha$, $\beta$) variable. When $\alpha = 1$, we recognize this as the MGF of an Exponential($\beta$) distribution, so therefore we can sample from the exponential distribution in this case. We use the rejection sampling algorithm for $\alpha \in (0,1)$ and the ratio of uniforms algorithm for $\alpha>1$. 
 
 ```{r, fig.cap = "Theoretical and simulated values of gamma distribution when alpha = 2, beta = 2"}
-# Delete this before merging the files, only for help
-# n: number of samples to generate
-# rate: the rate
-# expdist returns a vector with generated random numbers from exponential distribution
-expdist <- function(rate, n) {
-   u <- runif(n)
-   x <-  -log( (1/rate)*( 1 - u))/rate
-   list = list(x, u)
-   return(list)
-}
 
 # gammaab samples from the gamma distribution for all values of alpha and beta > 0 
 gammaab <- function(alpha, beta, n) {
@@ -781,7 +784,7 @@ c_numerical <- c_const(y)
 The number of trials in the simulation until one acceptance is `r number_of_trials`, and the numerical calcualtion of the theoretical number of trials is `r c_numerical`.
 
 ## Question D4
-We want to use the Beta(1,5) distribution as the prior, instead of the U(0,1) distribution and importance sampling with self-normalizing weights. The new prior with a Beta(1,5) distribution is: 
+We want to use the Beta(1,5) distribution as the prior, instead of the U(0,1) distribution and importance sampling with self-normalizing weights to estimate the posterior mean. The new prior with a Beta(1,5) distribution is: 
 $$
 f(\theta) = \frac{\Gamma(6)}{\Gamma(5)}(1-\theta)^4=5(1-\theta)^4
 $$
@@ -797,7 +800,7 @@ and because our estimate is based on the samples of $\theta$ in part D 2, we use
 $$
 \mu = \frac{\sum_{i=1}^N\theta_iw(\theta_i)}{\sum_{i=1}^Nw(\theta_i)}
 $$
-which is biased, but for $n\to\inf$ it becomes approximately unbiased. 
+which is biased, but for $n\to\infty$ it becomes approximately unbiased. 
 
 ```{r}
 #fnew calculates the unnormalized new posterior distribution
@@ -841,4 +844,4 @@ numerical_d4 <- function(y) {
 
 num_d4 <- numerical_d4(y)
 ```
-The simulated expected value is `r simulated_d4`, and the numerical value is `r num_d4`. We see that they are equal.
+The simulated posterior mean is `r simulated_d4`, and the numerical value is `r num_d4`. We see that they are equal.
